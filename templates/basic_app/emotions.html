@@ -1,0 +1,36 @@
+{% extends "basic_app/base.html" %}
+    {% block body_block %}
+    <div class = 'jumbotron'>
+        <h2>Please see the list of your emotions</h2>
+        <!-- <h1>{{text| upper}}</h1> -->
+        {{insert_me}}
+        <div class = 'container'>
+            {% if emotions_records%}
+                <table>
+                    <thead>
+                        <th>date</th>
+                        <th>event</th>
+                        <th>emotions</th>
+                        <th>body reaction</th>
+                        <th>thoughts</th>
+                        <th>outcome</th>
+                    </thead>
+                    {% for em in emotions_records %}
+                    <tr>
+                        <td>{{em.date}}</td>
+                        <td>{{em.event}}</td>
+                        <td>{{em.emotions}}</td>
+                        <td>{{em.body_reaction}}</td>
+                        <td>{{em.thoughts}}</td>
+                        <td>{{em.outcome}}</td>
+
+                    </tr>
+                    {% endfor%}
+                </table>
+            {% else %}
+            <p> No records</p>
+            {% endif%}
+        </div>
+
+    </div>
+    {%endblock%}

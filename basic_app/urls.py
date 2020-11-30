@@ -9,5 +9,8 @@ app_name = 'basic_app'
 urlpatterns = [
     url(r'^$', views.index,name = 'index'),
     url(r'^emotions/$', views.emotions,name = 'emotions'),
+    url(r'^login/$', views.login,name = 'login'),
+    url(r'^signup/$', views.signup,name = 'signup'),
+
 ]
 

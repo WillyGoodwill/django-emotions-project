@@ -41,6 +41,14 @@ def emotions(request):
     #     print(e.event)
     emotions_list = Emotions.objects.all()
     context_dict = {'emotions_records':emotions_list,'insert_me':'Hello, I am from views'}
+    
+    if request.method == 'POST':
+        try:
+            print(Emotions.objects.last().event)
+            Emotions.objects.last().delete()
+
+        except:
+            print('No items to delete')
     return render(request,'basic_app/emotions.html', context = context_dict)
 
 def login(request):

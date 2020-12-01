@@ -27,6 +27,11 @@
                     </tr>
                     {% endfor%}
                 </table>
+                <br>
+                <form  method = "POST">
+                    {% csrf_token %} 
+                    <input type="submit" class = 'btn btn-danger' value = 'Delete last item' name = 'delete'>
+                </form>
             {% else %}
             <p> No records</p>
             {% endif%}

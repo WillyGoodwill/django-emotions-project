@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^$', views.index, name = 'index'),
     url('admin/', admin.site.urls),
     url(r'^basic_app/', include('basic_app.urls')),
+    # url(r'^formpage/', views.form_emotions_view,name ='form_name'),
 
 
 

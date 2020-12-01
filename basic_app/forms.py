@@ -10,11 +10,13 @@ class FormEmotions(forms.ModelForm):
     thoughts = forms.CharField()
     outcome = forms.CharField()
 
+    class Meta():
+        model = Emotions
+        fields = '__all__'
+        
     # botcatcher = forms.CharField(required = False,
     #                             widget =forms.HiddenInput,
     #                             validators = [validators.MaxLengthValidator(0)] )
     
-    class Meta():
-        model = Emotions
-        fields = '__all__'
+
         

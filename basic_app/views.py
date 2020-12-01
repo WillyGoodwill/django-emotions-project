@@ -12,12 +12,7 @@ from basic_app.forms import FormEmotions
 # application = get_wsgi_application()
 
 def index(request):
-    return render(request,'basic_app/index.html')
-
-def emotions_form(request):
-    
     form = FormEmotions()
-    
     if request.method == 'POST':
         form = FormEmotions(request.POST)
         if form.is_valid():
@@ -25,7 +20,20 @@ def emotions_form(request):
             form = FormEmotions()
         else:
             print('Form invalid')
-    return render(request,'basic_app/form_page.html',{'form':form})
+    return render(request,'basic_app/index.html',{'form':form})
+
+# def emotions_form(request):
+    
+#     form = FormEmotions()
+    
+#     if request.method == 'POST':
+#         form = FormEmotions(request.POST)
+#         if form.is_valid():
+#             form.save(commit = True)
+#             form = FormEmotions()
+#         else:
+#             print('Form invalid')
+#     return render(request,'basic_app/form_page.html',{'form':form})
 
 
 def emotions(request):

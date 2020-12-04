@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = 'utf-8'>
+        <title>My app</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <!--Load the AJAX API-->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+
+            // Load the Visualization API and the corechart package.
+            // google.charts.load('current', {'packages':['corechart']});
+            // google.charts.load('current', {'packages':['gauge']});
+            // google.charts.load('current', {
+            // 'packages': ['geochart'],
+            // // Note: you will need to get a mapsApiKey for your project.
+            // // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+            // // 'mapsApiKey': 'AIzaSyCcn4F8brJ7tZ17nFUO-U8ZCSqIcNNP0tQ'
+            // });
+            // Set a callback to run when the Google Visualization API is loaded.
+            // google.charts.setOnLoadCallback(drawChart1);
+            // google.charts.setOnLoadCallback(drawChart2);
+
+            // google.charts.setOnLoadCallback(drawChart3);
+            // google.charts.setOnLoadCallback(drawChart4);
+            // google.charts.setOnLoadCallback(drawMarkersMap);
+
+            // Callback that creates and populates a data table,
+            // instantiates the pie chart, passes in the data and
+            // draws it.
+            data_from_django = {{ values|safe }};
+            widget.init(data_from_django);
+            data_from_views2 = {{ values2|safe }};
+            // widget.init(data_from_views2);
+
+            function drawChart1() {
+
+                // Create the data table.
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Topping');
+                data.addColumn('number', 'Slices');
+                data.addRows(data_from_django);
+
+                // Set chart options
+                var options = {
+                title: 'My Daily Activities',
+                pieHole: 0.4,
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+                chart.draw(data, options);
+            }
+            // function drawChart2() {
+
+            //     // Create the data table.
+            //     var data = new google.visualization.DataTable();
+            //     data.addColumn('string', 'Topping');
+            //     data.addColumn('number', 'Slices');
+            //     data.addRows(data_from_django);
+
+            //     // Set chart options
+            //     var options = {'title':'Mood tracker',
+            //                     'width':400,
+            //                     'height':300};
+
+            //     // Instantiate and draw our chart, passing in some options.
+            //     var piechart_options = {title:'Pie Chart: How Much Pizza I Ate Last Night',
+            //            width:400,
+            //            height:300};
+            //     var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+            //     piechart.draw(data, piechart_options);
+
+            //     var barchart_options = {title:'Barchart: How Much Pizza I Ate Last Night',
+            //                 width:400,
+            //                 height:300,
+            //                 legend: 'none'};
+            //     var barchart = new google.visualization.BarChart(document.getElementById('barchart_div'));
+            //     barchart.draw(data, barchart_options);
+            // }
+            // function drawChart3() {
+
+            //     // Create the data table.
+            //     var data = new google.visualization.DataTable();
+            //     data.addColumn('string', 'Topping');
+            //     data.addColumn('number', 'Slices');
+            //     data.addRows(data_from_django);
+
+            //     // Set chart options
+            //     var options = {'title':'Mood tracker',
+            //                     'width':400,
+            //                     'height':300};
+
+            //     // Instantiate and draw our chart, passing in some options.
+            //     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+            //     chart.draw(data, options);
+            // }
+            // function drawChart4() {
+
+            //     var data = google.visualization.arrayToDataTable([
+            //     ['Label', 'Value'],
+            //     ['Memory', 80],
+            //     ['CPU', 55],
+            //     ['Network', 68]
+            //     ]);
+
+            //     var options = {
+            //     width: 400, height: 120,
+            //     redFrom: 90, redTo: 100,
+            //     yellowFrom:75, yellowTo: 90,
+            //     minorTicks: 5
+            //     };
+
+            //     var chart = new google.visualization.Gauge(document.getElementById('chart_div2'));
+
+            //     chart.draw(data, options);
+
+            //     setInterval(function() {
+            //     data.setValue(0, 1, 40 + Math.round(60 * Math.random()));
+            //     chart.draw(data, options);
+            //     }, 13000);
+            //     setInterval(function() {
+            //     data.setValue(1, 1, 40 + Math.round(60 * Math.random()));
+            //     chart.draw(data, options);
+            //     }, 5000);
+            //     setInterval(function() {
+            //     data.setValue(2, 1, 60 + Math.round(20 * Math.random()));
+            //     chart.draw(data, options);
+            //     }, 26000);
+            // }
+            // function drawMarkersMap() {
+            //     var data = google.visualization.arrayToDataTable([
+            //         ['Country', 'Popularity'],
+            //         ['South America', 600],
+            //         ['Canada', 500],
+            //         ['France', 600],
+            //         ['Russia', 700],
+            //         ['Australia', 600]
+            //     ]);
+
+
+            //     var options = {
+            //         sizeAxis: { minValue: 0, maxValue: 100 },
+            //         region: '155', // Western Europe
+            //         displayMode: 'text',
+            //         colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+            //     };
+
+            //     var chart = new google.visualization.GeoChart(document.getElementById('chart_div3'));
+            //     chart.draw(data, options);
+            // };
+           
+        </script>
+    </head>
+    <body>
+        <nav class = 'navbar navbar-default navbar-static-top'>
+            <div class = 'container'>
+                <ul class = 'nav navbar-nav'>
+                    <li><a class='navbar-brand' href="{% url 'index'%}">FOODTRACKER</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'admin:index'%}">Admin</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:vis'%}">VISUALIZATION</a></li>
+
+                </ul>
+                <ul class = 'nav navbar-nav mr-auto navbar-right'>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:signup'%}">Sign up</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:login'%}">Login</a></li>
+
+                </ul>
+            </div>
+        </nav>
+
+
+ 
+
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div"></div>
+
+<!--Table and divs that hold the pie charts-->
+<table class="columns">
+    <tr>
+
+      <td><div id="piechart_div" style="border: 1px solid #ccc"></div></td>
+      <td><div id="barchart_div" style="border: 1px solid #ccc"></div></td>
+    </tr>
+
+  </table>
+  <div id="donutchart" style="width: 900px; height: 500px;"></div>
+
+  <div id="chart_div2" style="width: 400px; height: 120px;"></div>
+  <div id="chart_div3" style="width: 900px; height: 500px;"></div>
+  <div id="columnchart_values" style="width: 900px; height: 300px;"></div>
+
+
+</body>
+</html>

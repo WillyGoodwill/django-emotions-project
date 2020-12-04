@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from basic_app.models import Emotions
+from basic_app.models import Emotions, MoodTracker
 from basic_app.forms import FormEmotions
 
 # Create your views here.
@@ -58,4 +58,33 @@ def signup(request):
         return HttpResponse('Hello, from Sign up page')
 
 
+# from qsstats import QuerySetStats
+# from qsstats import Count
+import datetime
+def vis(request):
+    # start_date = datetime.datetime(1980, 5, 8, 00, 00).date()
+    # end_date = datetime.datetime(2020, 5, 8, 00, 00).date()
+
+    # queryset = MoodTracker.objects.all()
+    # # считаем количество платежей...
+    # qsstats = QuerySetStats(queryset, date_field='datetime', aggregate = Count('id'))
+
+    # ...в день за указанный период
+    # values = qsstats.time_series(start_date, end_date, interval='days')
+
+    # summary = qsstats.time_series(start_date, end_date, interval='days', aggregate = Count('id'))
+    values = ([
+                ['Страх', 3],
+                ['Тоска', 1],
+                ['Грусть', 1],
+                ['Радость', 2]
+            ])
+    values2 =[
+                    ["Element", "Density"],
+                    ["Copper", 8.94],
+                    ["Silver", 10.49],
+                    ["Gold", 19.30],
+                    ["Platinum", 21.45]
+                ]
+    return render(request,'basic_app/google_template.html', {'values': values,'values2': values2})
 

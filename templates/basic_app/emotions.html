@@ -9,6 +9,7 @@
                 <table>
                     <thead>
                         <th>date</th>
+                        <th>weather</th>
                         <th>event</th>
                         <th>emotions</th>
                         <th>body reaction</th>
@@ -18,6 +19,7 @@
                     {% for em in emotions_records %}
                     <tr>
                         <td>{{em.date}}</td>
+                        <td>{{em.currentweather}}</td>
                         <td>{{em.event}}</td>
                         <td>{{em.emotions}}</td>
                         <td>{{em.body_reaction}}</td>

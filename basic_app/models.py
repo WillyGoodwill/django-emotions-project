@@ -12,6 +12,8 @@ class Emotions(models.Model):
 
 )
     date = models.DateField()
+    currentweather = models.IntegerField(default = 1)
+
     event = models.CharField(max_length= 100)
     emotions = models.CharField(max_length= 100)
     # emotions = models.CharField(max_length=1, choices=EMOTIONS_CHOICES)

@@ -1,9 +1,20 @@
 from django import forms
 from django.core import validators
 from basic_app.models import Emotions
-
+import datetime
 class FormEmotions(forms.ModelForm):
-    date = forms.DateField()
+    # getting current weather from API for St. Petersburg
+    import requests
+    import json 
+    appid = "e39c82d8879b82213e1312de1f211aa5"
+    city_id = 498817    
+    res = requests.get("http://api.openweathermap.org/data/2.5/weather",
+                    params={'id': city_id, 'units': 'metric', 'lang': 'ru', 'APPID': appid})
+    data = res.json()
+    current_weather_temp = data['main']['temp']
+    # other fields
+    date = forms.DateTimeField(initial = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    currentweather = forms.IntegerField(initial = current_weather_temp, required=False)
     event = forms.CharField()
     emotions = forms.CharField()
     body_reaction = forms.CharField()

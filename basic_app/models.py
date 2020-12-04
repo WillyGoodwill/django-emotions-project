@@ -1,5 +1,5 @@
 from django.db import models
-
+import datetime
 # Create your models here.
 
 class Emotions(models.Model):
@@ -11,7 +11,8 @@ class Emotions(models.Model):
     (u'5', u'Радость'),
 
 )
-    date = models.DateField()
+    date = models.DateTimeField(default=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
     currentweather = models.IntegerField(default = 1)
 
     event = models.CharField(max_length= 100)

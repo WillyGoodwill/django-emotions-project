@@ -6,6 +6,14 @@ from django.utils import timezone
 
 
 class FormEmotions(forms.ModelForm):
+    
+    EMOTIONS_CHOICES = (
+    (u'1', u'Страх'),
+    (u'2', u'Тоска'),
+    (u'3', u'Гнев'),
+    (u'4', u'Стыд'),
+    (u'5', u'Радость'))
+    
     # getting current weather from API for St. Petersburg
     import requests
     import json 
@@ -19,7 +27,11 @@ class FormEmotions(forms.ModelForm):
     date = forms.DateField(initial = timezone.now())
     currentweather = forms.FloatField(initial = current_weather_temp, required=False)
     event = forms.CharField()
-    emotions = forms.CharField()
+
+    emotions = forms.ChoiceField(choices = EMOTIONS_CHOICES)
+
+    emotions_degree = forms.MultipleChoiceField(choices = EMOTIONS_CHOICES,widget=forms.CheckboxSelectMultiple)
+
     body_reaction = forms.CharField()
     thoughts = forms.CharField()
     outcome = forms.CharField()

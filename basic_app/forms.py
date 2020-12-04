@@ -2,6 +2,9 @@ from django import forms
 from django.core import validators
 from basic_app.models import Emotions
 import datetime
+from django.utils import timezone
+
+
 class FormEmotions(forms.ModelForm):
     # getting current weather from API for St. Petersburg
     import requests
@@ -13,8 +16,8 @@ class FormEmotions(forms.ModelForm):
     data = res.json()
     current_weather_temp = data['main']['temp']
     # other fields
-    date = forms.DateTimeField(initial = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    currentweather = forms.IntegerField(initial = current_weather_temp, required=False)
+    date = forms.DateField(initial = timezone.now())
+    currentweather = forms.FloatField(initial = current_weather_temp, required=False)
     event = forms.CharField()
     emotions = forms.CharField()
     body_reaction = forms.CharField()

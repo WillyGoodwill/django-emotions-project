@@ -1,6 +1,9 @@
 from django.db import models
 import datetime
+from django.utils import timezone
+
 # Create your models here.
+
 
 class Emotions(models.Model):
     EMOTIONS_CHOICES = (
@@ -11,9 +14,9 @@ class Emotions(models.Model):
     (u'5', u'Радость'),
 
 )
-    date = models.DateTimeField(default=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    date = models.DateField(editable=True, auto_now=True)
 
-    currentweather = models.IntegerField(default = 1)
+    currentweather = models.FloatField(default = 1.0)
 
     event = models.CharField(max_length= 100)
     emotions = models.CharField(max_length= 100)

@@ -15,8 +15,8 @@ def index(request):
     with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
 
         data1 = json.load(json_file)
-        emotions_lib = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
-        data3 = tuple([(k, v) for k,v in enumerate(emotions_lib)])
+        data2 = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
+        data3 = tuple([(k, v) for k,v in enumerate(data2)])
 
     value = random.choice(data3)
     className_lib = ['myYellowText','myRedText','myBlueText']
@@ -29,8 +29,15 @@ def index(request):
 
 
     if request.method == 'POST':
-        value = random.choice(emotions_lib)
-    return render(request,'basic_app/index.html',{'value':value,'className':className})
+        value = random.choice(data3)
+        className_lib = ['myYellowText','myRedText','myBlueText']
+        if value[0]<50:
+            className = className_lib[0]
+        elif value[0]>=50 and value[0]<110:
+            className = className_lib[1]
+        else:
+            className = className_lib[2]
+    return render(request,'basic_app/index.html',{'value':value[1],'className':className})
 
 def emotions_form(request):
     form = FormEmotions()

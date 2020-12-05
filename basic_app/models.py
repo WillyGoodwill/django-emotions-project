@@ -9,7 +9,7 @@ class Emotions(models.Model):
 
     date = models.DateField(auto_now=True)
 
-    currentweather = models.FloatField()
+    current_weather = models.FloatField(default=1)
 
     event = models.CharField(max_length= 100)
     emotions = models.CharField(max_length= 100)

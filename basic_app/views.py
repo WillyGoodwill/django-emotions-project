@@ -11,9 +11,15 @@ import requests
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "emotions_project.settings")
 # application = get_wsgi_application()
 import random
+import json
+import os
 
 def index(request):
-    emotions_lib = ['радость','грусть','тоска','страх']
+    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+        data1 = json.load(json_file)
+        emotions_lib = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
+        # data3 = tuple([(k, v) for k,v in enumerate(data2)])
+
     value = random.choice(emotions_lib)
     if request.method == 'POST':
         value = random.choice(emotions_lib)
@@ -28,7 +34,7 @@ def emotions_form(request):
             form = FormEmotions()
         else:
             print('Form invalid')
-    return render(request,'basic_app/index.html',{'form':form})
+    return render(request,'basic_app/emotions_form.html',{'form':form})
 
 
 

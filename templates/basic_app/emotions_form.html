@@ -4,13 +4,12 @@
         <h1>WELCOME TO EMOTIONS PROJECT</h1>
         <!-- <h2>Please sign up or login to continue</h2> -->
         <div class = 'container'>
-            <h2>Random emotion of the day:</h2>    
-                <form method = 'POST'>
-                    <h1><strong>{{value}}</strong></h1>
-                    <br>
-                    {% csrf_token%}
-                    <input type="submit" class = 'btn btn-success' value = 'Random'>
-                </form>
+            <h2>Please fill in the form</h2>    
+            <form method = 'POST'>
+                {{form.as_p}}
+                {% csrf_token%}
+                <input type="submit" class = 'btn btn-primary' value = 'Submit'>
+            </form>
         </div> 
 
     </div>

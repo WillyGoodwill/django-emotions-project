@@ -18,7 +18,7 @@ class FormEmotions(forms.ModelForm):
     (u'5', u'Радость'))
     
     # emotions degree list
-    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+    with open('emotions_project/templates/basic_app/emotions_degree.json', 'r') as json_file:
         data1 = json.load(json_file)
         data2 = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
         data3 = tuple([(k, v) for k,v in enumerate(data2)])

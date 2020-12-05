@@ -15,7 +15,9 @@ import json
 import os
 
 def index(request):
-    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+    with open('emotions_project/templates/basic_app/emotions_degree.json', 'r') as json_file:
+    # with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+
         data1 = json.load(json_file)
         emotions_lib = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
         # data3 = tuple([(k, v) for k,v in enumerate(data2)])

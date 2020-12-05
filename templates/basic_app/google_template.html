@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = 'utf-8'>
+        <title>My app</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <!--Load the AJAX API-->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+
+            // Load the Visualization API and the corechart package.
+            google.charts.load('current', {'packages':['corechart']});
+
+            // Set a callback to run when the Google Visualization API is loaded.
+            google.charts.setOnLoadCallback(drawChart1);
+
+            // Callback that creates and populates a data table,
+            // instantiates the pie chart, passes in the data and
+            // draws it.
+            data_from_django = {{ values|safe }};
+            widget.init(data_from_django);
+
+            function drawChart1() {
+
+                // Create the data table.
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Topping');
+                data.addColumn('number', 'Slices');
+                data.addRows(data_from_django);
+
+                // Set chart options
+                var options = {
+                title: 'My Daily Activities',
+                pieHole: 0.4,
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+                chart.draw(data, options);
+            }
+           
+           
+        </script>
+    </head>
+    <body>
+        <nav class = 'navbar navbar-default navbar-static-top'>
+            <div class = 'container'>
+                <ul class = 'nav navbar-nav'>
+                    <li><a class='navbar-brand' href="{% url 'index'%}">FOODTRACKER</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'admin:index'%}">Admin</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:vis'%}">CHARTS</a></li>
+
+                </ul>
+                <ul class = 'nav navbar-nav mr-auto navbar-right'>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:signup'%}">Sign up</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:login'%}">Login</a></li>
+
+                </ul>
+            </div>
+        </nav>
+
+
+ 
+
+    <!--Div that will hold the pie chart-->
+    <div id="donutchart"></div>
+
+
+</body>
+</html>

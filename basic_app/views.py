@@ -52,10 +52,19 @@ def emotions(request):
     return render(request,'basic_app/emotions.html', context = context_dict)
 
 def login(request):
-        return HttpResponse('Hello, from Login page')
+    return HttpResponse('Hello, from Login page')
 
 def signup(request):
-        return HttpResponse('Hello, from Sign up page')
+    return HttpResponse('Hello, from Sign up page')
 
+def vis(request):
+    values =[
+          ['Mushrooms', 3],
+          ['Onions', 1],
+          ['Olives', 1],
+          ['Zucchini', 1],
+          ['Pepperoni', 2]
+        ]
+    return render(request,'basic_app/google_template.html', {'values':values})
 
 

@@ -5,27 +5,32 @@ from basic_app.models import Emotions
 from basic_app.forms import FormEmotions
 import requests
 # Create your views here.
-# import os 
 
-# from django.core.wsgi import get_wsgi_application
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "emotions_project.settings")
-# application = get_wsgi_application()
+
 import random
 import json
 import os
 
 def index(request):
-    with open('emotions_project/templates/basic_app/emotions_degree.json', 'r') as json_file:
-    # with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
 
         data1 = json.load(json_file)
         emotions_lib = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']
-        # data3 = tuple([(k, v) for k,v in enumerate(data2)])
+        data3 = tuple([(k, v) for k,v in enumerate(emotions_lib)])
 
-    value = random.choice(emotions_lib)
+    value = random.choice(data3)
+    className_lib = ['myYellowText','myRedText','myBlueText']
+    if value[0]<50:
+        className = className_lib[0]
+    elif value[0]>=50 and value[0]<110:
+        className = className_lib[1]
+    else:
+        className = className_lib[2]
+
+
     if request.method == 'POST':
         value = random.choice(emotions_lib)
-    return render(request,'basic_app/index.html',{'value':value})
+    return render(request,'basic_app/index.html',{'value':value,'className':className})
 
 def emotions_form(request):
     form = FormEmotions()

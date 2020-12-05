@@ -6,10 +6,12 @@
         <div class = 'container'>
             <h2>Random emotion of the day:</h2>    
                 <form method = 'POST'>
+                    <div class ={{className}} >
                     <h1><strong>{{value}}</strong></h1>
+                    </div>
                     <br>
                     {% csrf_token%}
-                    <input type="submit" class = 'btn btn-success' value = 'Random'>
+                    <input type="submit" class = 'btn btn-success' value = 'Update'>
                 </form>
         </div> 
 

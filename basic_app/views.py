@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from basic_app.models import Emotions
-from basic_app.forms import FormEmotions
+from basic_app.models import Emotions,EmotionsAvgTemperature
+from basic_app.forms import FormEmotions,FormEmotionsAvgTemperature
 import requests
 # Create your views here.
 
@@ -10,6 +10,11 @@ import requests
 import random
 import json
 import os
+import pandas as pd
+import datetime
+
+from django.db.models import Count
+from django.db.models import Avg
 
 def index(request):
     with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
@@ -46,8 +51,20 @@ def emotions_form(request):
         if form.is_valid():
             form.save(commit = True)
             form = FormEmotions()
+
         else:
             print('Form invalid')
+       
+        # process and save data to database: number of joy per day vs avg temp per day        
+        # calc summary for the last date and save to DB, 
+        # in DB will be several entries for this date, the last - the most actual
+        date = Emotions.objects.values('date').filter(emotions ='5').annotate(total =Count('date')).order_by('-date').values('date')[0]
+        joyfullness = list(Emotions.objects.values('date').filter(emotions ='5').annotate(total =Count('date')).order_by('-date').values('total')[0].values())[0]
+        average_temperature = list(Emotions.objects.values('date').filter(emotions = '5').annotate(avg_temp = Avg('current_weather')).order_by('-date').values('avg_temp')[0].values())[0]
+
+        my_obj = EmotionsAvgTemperature(date = date,
+        joyfullness=joyfullness, average_temperature=average_temperature)        
+        my_obj.save()  
     return render(request,'basic_app/emotions_form.html',{'form':form})
 
 
@@ -56,7 +73,7 @@ def emotions(request):
     # for e in Emotions.objects.all():
     #     print(e.event)
     emotions_list = Emotions.objects.all()
-    context_dict = {'emotions_records':emotions_list,'insert_me':'Hello, I am from views'}
+    context_dict = {'emotions_records':emotions_list}
     
     if request.method == 'POST':
         try:
@@ -123,7 +140,7 @@ def vis(request):
     # transform to desired output {'fear':123,'sadness':123}
     values_str = str(values_pie)
     val_pie_today = eval(values_str.replace(',','],[').replace('{','[[').replace('}',']]').replace(':',','))
-    # print(val_pie_today)
+    print(val_pie_today)
     # -----------------------data for DrawTable-----------------------
     table_values = [
                 ['Курение',  3, 0],
@@ -132,7 +149,8 @@ def vis(request):
                 ['Плохая усидчивость',   0, 1]
                 ]
     values_bad_dict = ['курить']
-    
+    queryset = Emotions.objects.filter(outcome__iregex=r'курила').values()
+
     # ----------------------- Data for line chart -----------------------
     # grab unique dates
     date = []
@@ -164,10 +182,34 @@ def vis(request):
     val_dict_str = str(val_dict_str)
     val_dict_str = val_dict_str.replace('(','').replace(')','')
     val_dict_str = eval(val_dict_str)
-    # print((val_dict_str))
+    print((val_dict_str))
     
+    # ----------------------- Data for Scatter Plot -----------------------
+    # NEED:Summary of Joyfullness per day
+    # filter joyfullness
+    import pandas as pd
+    import datetime
+    # filter emotions - by type Joyfullness
+    df = pd.DataFrame(list(Emotions.objects.all().filter(emotions ='5').values()))
+    # df = pd.DataFrame(list(Emotions.objects.all().filter(date__gte =datetime.date.today()).values()))
+    df1 = df.groupby('date').count()[['id']]
+    df1 = df1.rename(columns = {'id':'count_of_joy'})
+    df2 = df.groupby('date').mean()[['current_weather']]
+    df3 = df1.join(df2)
+    val_scatter = [[ 'Joyfullness','Temperature']]
+
+    for index,row in df3.iterrows():
+        my_list =[row.count_of_joy,row.current_weather]
+        val_scatter.append(my_list)
+
+    print(val_scatter)
+    # convert to pandas dataframe
+    # accumulate group by date with count
+
     return render(request,'basic_app/google_template.html', {'values':values,
                                                         'val_pie_today':val_pie_today,
                                                         'table_values':table_values,
-                                                        'val_dict_str':val_dict_str})
+                                                        'val_dict_str':val_dict_str,
+                                                        'val_scatter':val_scatter
+                                                        })
 

@@ -1,6 +1,6 @@
 from django import forms
 from django.core import validators
-from basic_app.models import Emotions
+from basic_app.models import Emotions, EmotionsAvgTemperature
 import datetime
 from django.utils import timezone
 import os
@@ -36,15 +36,15 @@ class FormEmotions(forms.ModelForm):
     # other fields
     date = forms.DateField(initial = timezone.now())
     current_weather = forms.FloatField(initial = current_weather_temp, required=False)
-    event = forms.CharField()
+    event = forms.CharField(required = False)
 
     emotions = forms.ChoiceField(choices = EMOTIONS_CHOICES)
 
     emotions_degree = forms.ChoiceField(choices = data3)
 
-    body_reaction = forms.CharField()
-    thoughts = forms.CharField()
-    outcome = forms.CharField()
+    body_reaction = forms.CharField(required = False)
+    thoughts = forms.CharField(required = False)
+    outcome = forms.CharField(required = False)
 
     class Meta():
         model = Emotions
@@ -54,5 +54,8 @@ class FormEmotions(forms.ModelForm):
     #                             widget =forms.HiddenInput,
     #                             validators = [validators.MaxLengthValidator(0)] )
     
-
+class FormEmotionsAvgTemperature(forms.ModelForm):
+    date = forms.DateField()
+    joyfullness = forms.FloatField(required = False)
+    average_temperature = forms.FloatField(required = False)
         

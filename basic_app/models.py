@@ -18,3 +18,7 @@ class Emotions(models.Model):
     thoughts = models.CharField(max_length= 100)
     outcome = models.CharField(max_length= 100)
 
+class EmotionsAvgTemperature(models.Model):
+    date = models.DateField(auto_now=True)
+    joyfullness = models.FloatField(blank = True, null = True)
+    average_temperature = models.FloatField(blank = True, null = True)

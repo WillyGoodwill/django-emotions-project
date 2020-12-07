@@ -18,6 +18,7 @@
 
             google.charts.setOnLoadCallback(drawTable);
             google.charts.setOnLoadCallback(drawLineChart);
+            google.charts.setOnLoadCallback(drawScatterPlot);
 
             // Callback that creates and populates a data table,
             // instantiates the pie chart, passes in the data and
@@ -44,16 +45,15 @@
                 chart.draw(data, options);
             }
 
-            data_from_django1 = {{ val_pie_today|safe }};
-            widget.init(data_from_django1);
 
             function drawChart2() {
 
                 // Create the data table.
+
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'Topping');
                 data.addColumn('number', 'Slices');
-                data.addRows([['Страх', 1], ['Тоска', 0], ['Гнев', 0], ['Стыд', 0], ['Радость', 0]]);
+                data.addRows({{val_pie_today|safe}});
 
                 // Set chart options
                 var options = {
@@ -69,27 +69,27 @@
             widget.init(data_from_django2);
 
             function drawTable() {
+                var djangodata = {{table_values|safe}};
                 var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Метрика');
-                data.addColumn('number', 'Кол-во');
-                data.addColumn('boolean', 'Полное отсутствие');
-                data.addRows([
-                ['Mike',  {v: 10000, f: '$10,000'}, true],
-                ['Jim',   {v:8000,   f: '$8,000'},  false],
-                ['Alice', {v: 12500, f: '$12,500'}, true],
-                ['Bob',   {v: 7000,  f: '$7,000'},  false]
-                ]);
+                // data.addColumn('string', 'Метрика');
+                // data.addColumn('number', 'Кол-во');
+                // data.addColumn('boolean', 'Полное отсутствие');
+                // data.addRows([
+                // ['Mike',  {v: 10000, f: '$10,000'}, true],
+                // ['Jim',   {v:8000,   f: '$8,000'},  false],
+                // ['Alice', {v: 12500, f: '$12,500'}, true],
+                // ['Bob',   {v: 7000,  f: '$7,000'},  false]
+                // ]);
 
                 var table = new google.visualization.Table(document.getElementById('table_div'));
 
                 table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
             }
             
-            data_from_django3 = {{ val_dict_str|safe }};
-            widget.init(data_from_django3);
-
+ 
             function drawLineChart() {
-                var data = google.visualization.arrayToDataTable([['year', 'value'], ['2020-12-05', 2.3333333333333335], ['2020-12-06', 1.92]]);
+                
+                var data = google.visualization.arrayToDataTable({{ val_dict_str|safe }});
 
                 var options = {
                 title: 'Daily average temperature',
@@ -98,6 +98,21 @@
                 };
 
                 var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+                chart.draw(data, options);
+            }
+
+            function drawScatterPlot() {
+                var data = google.visualization.arrayToDataTable({{val_scatter|safe}});
+
+                var options = {
+                title: 'Average temperature vs. Joyfullness',
+                hAxis: {title: 'Joyfullness', minValue: 0, maxValue: 7},
+                vAxis: {title: 'Temperature', minValue: 0, maxValue: 10},
+                legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('Scatterchart_div'));
 
                 chart.draw(data, options);
             }
@@ -140,6 +155,7 @@
 
     <div id="table_div"></div>
     <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id="Scatterchart_div" style="width: 900px; height: 500px"></div>
 
 
 </body>

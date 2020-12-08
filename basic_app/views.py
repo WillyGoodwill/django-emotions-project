@@ -8,7 +8,9 @@ import requests
 
 
 import random
+from django.core.serializers.json import DjangoJSONEncoder
 import json
+
 import os
 import pandas as pd
 import datetime
@@ -90,57 +92,108 @@ def login(request):
 def signup(request):
     return HttpResponse('Hello, from Sign up page')
 
+def PieChart_Total():
+    df = list(Emotions.objects.values('emotions').annotate(count = Count('emotions')).values('emotions','count'))
+    values = []
+    for row in df:
+        my_list= [row['emotions'],row['count']]
+        values.append(my_list)  
+    values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
+    return values
+
+def PieChart_Today():
+    df = list(Emotions.objects.values('emotions').filter(date__gte = datetime.date.today()).annotate(count = Count('emotions')).values('emotions','count'))
+    values = []
+    for row in df:
+        my_list = [row['emotions'],row['count']]
+        values.append(my_list)
+    
+    values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
+
+    return values
+
+def ScatterPlot_Joyfullness():
+    '''
+    Function to calculate summary of Joyfullness and avg temp per day 
+    by - group by day, calc avg and count
+    and filter emotions - by type Joyfullness
+    '''
+    df = list(Emotions.objects.values('date').filter(emotions = '5').annotate(avgTemp = Avg('current_weather'),
+    count = Count('emotions')).order_by('date').values('avgTemp','count'))
+    values = [[ 'Joyfullness','Temperature']]
+
+    for row in df:
+        my_list = [row['count'], row['avgTemp']]
+        values.append(my_list)
+
+    with open("basic_app/static/scatter_joyfullness.json", "w") as fp:
+        json.dump(values , fp) 
+
+    return values
+
+def ScatterPlot_Fear():
+    '''
+    Function to calculate summary of fear and avg temp per day 
+    by - group by day, calc avg and count
+    and filter emotions - by type fear
+    '''
+    df = list(Emotions.objects.values('date').filter(emotions = '1').annotate(avgTemp = Avg('current_weather'),
+    count = Count('emotions')).order_by('date').values('avgTemp','count'))
+    values = [[ 'Fear','Temperature']]
+
+    for row in df:
+        my_list = [row['count'], row['avgTemp']]
+        values.append(my_list)
+
+    with open("basic_app/static/scatter_fear.json", "w") as fp:
+        json.dump(values , fp) 
+
+    return values
+
+def LineChart():
+    '''
+    Function to calculate avg temperature daily - group by day, calc avg of temp
+
+    '''
+    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')).values('date','avgTemp'))
+    values = [['year','value']]
+    for row in df:
+        my_list = [row['date'].strftime('%Y-%m-%d'),row['avgTemp']]
+        values.append(my_list)
+    with open('basic_app/static/avg_temp.json','w') as ft:
+        json.dump(values,ft,sort_keys=True,
+                                indent=1,
+                                cls=DjangoJSONEncoder)
+    return values
+
+def HistogramChart():
+    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')))
+    values = [['Date', 'Avg Temperature']]
+    for row in df:
+        my_list = [row['date'], row['avgTemp']]
+        values.append(my_list)
+
+    values = str(values).replace('datetime','"datetime').replace(')',')"')
+    return values
+
+def CalendarChart():
+    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')))
+    values = []
+
+    for row in df:
+        my_list = [row['date'], row['avgTemp']]
+        values.append(my_list)
+
+    values = str(values).replace('datetime.date','new Date').replace('"','')
+    return values
+
 def vis(request):
     # ----------------------- Data for Pie Chart Total -----------------------
-    try:
-        fear = len(Emotions.objects.filter(emotions="1"))
-    except:
-        fear = 0
-    try:
-        sadness= len(Emotions.objects.filter(emotions="2"))
-    except:
-        sadness = 0
-    try:
-        anger= len(Emotions.objects.filter(emotions="3"))
-    except:
-        anger = 0
-    try:
-        shame = len(Emotions.objects.filter(emotions="4"))
-    except:
-        shame = 0
-    try:
-        joyfullness = len(Emotions.objects.filter(emotions="5"))
-    except:
-        joyfullness = 0
+    values = PieChart_Total()
 
-    values =[
-            ['Страх', fear],
-            ['Тоска', sadness],
-            ['Гнев', anger],
-            ['Стыд', shame],
-            ['Радость', joyfullness]]
-    # -----------------------data for Pie Chart Daily-----------------------
+    # -----------------------data for Pie Chart Current Day-----------------------
 
-    emotions_array = ['Страх', 'Тоска', 'Гнев', 'Стыд', 'Радость']
-
-    # iterate with if (== today date) append values
-    import datetime
-    values_pie = dict()
-    for i,em in enumerate(emotions_array):
-        # get date array for each emotion, sort 
-        values_pie[em] = 0
-        m = 0
-        for j in range(len(Emotions.objects.all())):
-            try:
-                if Emotions.objects.all()[j].date == datetime.date.today() and Emotions.objects.all()[j].emotions == str(i+1): 
-                    values_pie[em] = m+1
-            except:
-                values_pie[em] = 0 
-    
-    # transform to desired output {'fear':123,'sadness':123}
-    values_str = str(values_pie)
-    val_pie_today = eval(values_str.replace(',','],[').replace('{','[[').replace('}',']]').replace(':',','))
-    print(val_pie_today)
+    val_pie_today = PieChart_Today() 
     # -----------------------data for DrawTable-----------------------
     table_values = [
                 ['Курение',  3, 0],
@@ -151,65 +204,30 @@ def vis(request):
     values_bad_dict = ['курить']
     queryset = Emotions.objects.filter(outcome__iregex=r'курила').values()
 
-    # ----------------------- Data for line chart -----------------------
-    # grab unique dates
-    date = []
-    for i in range(len(Emotions.objects.all())):
-        date.append(Emotions.objects.all()[i].date)
-
-    date = sorted(list(set(date)))
-
-    # create dictionary with array of temperatures for particular date
-    val = dict()
-    for j in date:
-        val[j.strftime('%Y-%m-%d')]=[]
-        for i in range(len(Emotions.objects.all())):
-            if Emotions.objects.all()[i].date == j:
-                val[j.strftime('%Y-%m-%d')].append(Emotions.objects.all()[i].current_weather)
-
-    # calculate average for the day and save to dictionary by date key
-    import statistics
-    val_dict = dict()
-    for j in date:
-        val_dict[j.strftime('%Y-%m-%d')]=[]
-        val_dict[j.strftime('%Y-%m-%d')].append(statistics.mean(val[j.strftime('%Y-%m-%d')]))
-
-    # regexp to remove [] and replace : with ,
-    val_dict_str = str(val_dict)
-    val_dict_str = val_dict_str.replace('[','').replace(']','').replace(',','],[').replace(':',',').replace('{','[').replace('}',']')
-    # eval(val_dict_str) to get back normal array
-    val_dict_str = [['year','value'],eval(val_dict_str)]
-    val_dict_str = str(val_dict_str)
-    val_dict_str = val_dict_str.replace('(','').replace(')','')
-    val_dict_str = eval(val_dict_str)
-    print((val_dict_str))
+    # ----------------------- Data for line chart -----------------------   
     
+    val_line = LineChart()
+
     # ----------------------- Data for Scatter Plot -----------------------
-    # NEED:Summary of Joyfullness per day
-    # filter joyfullness
-    import pandas as pd
-    import datetime
-    # filter emotions - by type Joyfullness
-    df = pd.DataFrame(list(Emotions.objects.all().filter(emotions ='5').values()))
-    # df = pd.DataFrame(list(Emotions.objects.all().filter(date__gte =datetime.date.today()).values()))
-    df1 = df.groupby('date').count()[['id']]
-    df1 = df1.rename(columns = {'id':'count_of_joy'})
-    df2 = df.groupby('date').mean()[['current_weather']]
-    df3 = df1.join(df2)
-    val_scatter = [[ 'Joyfullness','Temperature']]
+ 
+    val_scatter_joy =  ScatterPlot_Joyfullness()
+    val_scatter_fear = ScatterPlot_Fear()
 
-    for index,row in df3.iterrows():
-        my_list =[row.count_of_joy,row.current_weather]
-        val_scatter.append(my_list)
+    # ----------------------- Data for Histogram -----------------------
 
-    print(val_scatter)
-    # convert to pandas dataframe
-    # accumulate group by date with count
+    val_hist = HistogramChart()
+
+    # ----------------------- Data for Calendar -----------------------
+
+    val_calendar = CalendarChart()
 
     return render(request,'basic_app/google_template.html', {'values':values,
                                                         'val_pie_today':val_pie_today,
                                                         'table_values':table_values,
-                                                        'val_dict_str':val_dict_str,
-                                                        'val_scatter':val_scatter
+                                                        'val_line':val_line,
+                                                        'val_scatter_joy':val_scatter_joy,
+                                                        'val_scatter_fear':val_scatter_fear,
+                                                        'val_hist': val_hist,
+                                                        'val_calendar':val_calendar
                                                         })
 

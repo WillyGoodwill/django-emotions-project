@@ -11,20 +11,27 @@
             // Load the Visualization API and the corechart package.
             google.charts.load('current', {'packages':['corechart']});
             google.charts.load('current', {'packages':['table']});
+            google.charts.load("current", {packages:["calendar"]});
 
             // Set a callback to run when the Google Visualization API is loaded.
             google.charts.setOnLoadCallback(drawChart1);
             google.charts.setOnLoadCallback(drawChart2);
 
             google.charts.setOnLoadCallback(drawTable);
+
             google.charts.setOnLoadCallback(drawLineChart);
+
             google.charts.setOnLoadCallback(drawScatterPlot);
+            google.charts.setOnLoadCallback(drawScatterPlot_Fear);
+            google.charts.setOnLoadCallback(drawScatterPlot_Sadness);
+            google.charts.setOnLoadCallback(drawScatterPlot_Shame);
+
+            google.charts.setOnLoadCallback(drawHistogram);
+            google.charts.setOnLoadCallback(drawCalendar);
 
             // Callback that creates and populates a data table,
             // instantiates the pie chart, passes in the data and
             // draws it.
-            data_from_django = {{ values|safe }};
-            widget.init(data_from_django);
 
 
             function drawChart1() {
@@ -33,7 +40,7 @@
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'Topping');
                 data.addColumn('number', 'Slices');
-                data.addRows(data_from_django);
+                data.addRows({{ values|safe }});
 
                 // Set chart options
                 var options = {
@@ -57,16 +64,14 @@
 
                 // Set chart options
                 var options = {
-                title: 'Daily Emotions',
-                pieHole: 0.4,
+                    title: 'Daily Emotions',
+                    pieHole: 0.4,
                 };
-
                 var chart = new google.visualization.PieChart(document.getElementById('donutchart2'));
                 chart.draw(data, options);
-                }
             
-            data_from_django2 = {{ table_values|safe }};
-            widget.init(data_from_django2);
+            }
+            
 
             function drawTable() {
                 var djangodata = {{table_values|safe}};
@@ -89,7 +94,7 @@
  
             function drawLineChart() {
                 
-                var data = google.visualization.arrayToDataTable({{ val_dict_str|safe }});
+                var data = google.visualization.arrayToDataTable({{ val_line|safe }});
 
                 var options = {
                 title: 'Daily average temperature',
@@ -103,12 +108,12 @@
             }
 
             function drawScatterPlot() {
-                var data = google.visualization.arrayToDataTable({{val_scatter|safe}});
+                var data = google.visualization.arrayToDataTable({{val_scatter_joy|safe}});
 
                 var options = {
                 title: 'Average temperature vs. Joyfullness',
                 hAxis: {title: 'Joyfullness', minValue: 0, maxValue: 7},
-                vAxis: {title: 'Temperature', minValue: 0, maxValue: 10},
+                vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
                 legend: 'none'
                 };
 
@@ -116,6 +121,79 @@
 
                 chart.draw(data, options);
             }
+            function drawScatterPlot_Fear() {
+                var data = google.visualization.arrayToDataTable({{val_scatter_fear|safe}});
+
+                var options = {
+                title: 'Average temperature vs. Fear',
+                hAxis: {title: 'Fear', minValue: 0, maxValue: 7},
+                vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
+                legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('Scatterchart_div_fear'));
+
+                chart.draw(data, options);
+            }
+
+            function drawScatterPlot_Sadness() {
+                var data = google.visualization.arrayToDataTable({{val_scatter_fear|safe}});
+
+                var options = {
+                title: 'Average temperature vs. Sadness',
+                hAxis: {title: 'Sadness', minValue: 0, maxValue: 7},
+                vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
+                legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('Scatterchart_div_sadness'));
+
+                chart.draw(data, options);
+            }
+
+            function drawScatterPlot_Shame() {
+                var data = google.visualization.arrayToDataTable({{val_scatter_fear|safe}});
+
+                var options = {
+                title: 'Average temperature vs. Shame',
+                hAxis: {title: 'Shame', minValue: 0, maxValue: 7},
+                vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
+                legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('Scatterchart_div_shame'));
+
+                chart.draw(data, options);
+            }
+
+            function drawHistogram() {
+                var data = google.visualization.arrayToDataTable({{val_hist|safe}});
+
+                var options = {
+                title: 'Average temperature',
+                legend: { position: 'none' },
+                };
+
+                var chart = new google.visualization.Histogram(document.getElementById('Histogram_div'));
+                chart.draw(data, options);
+            }
+
+            function drawCalendar() {
+                var dataTable = new google.visualization.DataTable();
+                dataTable.addColumn({ type: 'date', id: 'Date' });
+                dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+                dataTable.addRows({{val_calendar|safe}});
+
+                var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+                var options = {
+                    title: "Average Temperature",
+                    height: 350,
+                };
+
+                chart.draw(dataTable, options);
+            }
+
         </script>
     </head>
     <body>
@@ -155,8 +233,23 @@
 
     <div id="table_div"></div>
     <div id="curve_chart" style="width: 900px; height: 500px"></div>
-    <div id="Scatterchart_div" style="width: 900px; height: 500px"></div>
+    
+    <!-- <div id="Scatterchart_div" style="width: 900px; height: 500px"></div> -->
+    <div id="Histogram_div" style="width: 900px; height: 500px"></div>
+    <div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
 
-
+    <div class = 'container'>
+        <table class="columns">
+            <tr>
+              <td><div id="Scatterchart_div" style="border: 0px solid #ccc"></div></td>
+              <td><div id="Scatterchart_div_fear" style="border: 0px solid #ccc"></div></td>
+            </tr>
+            <tr>
+                <td><div id="Scatterchart_div_sadness" style="border: 0px solid #ccc"></div></td>
+                <td><div id="Scatterchart_div_shame" style="border: 0px solid #ccc"></div></td>
+              </tr>
+          </table>
+        </div>
+        <br>
 </body>
 </html>

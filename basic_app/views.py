@@ -3,10 +3,12 @@ from django.http import HttpResponse
 
 from basic_app.models import Emotions,EmotionsAvgTemperature
 from basic_app.forms import FormEmotions,FormEmotionsAvgTemperature
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import (TemplateView, ListView, DetailView, CreateView
+)
 import requests
-# Create your views here.
-
-
 import random
 from django.core.serializers.json import DjangoJSONEncoder
 import json
@@ -72,8 +74,8 @@ def emotions_form(request):
 
 
 def emotions(request):
-    # for e in Emotions.objects.all():
-    #     print(e.event)
+    # don't want to show to everyone, Login required
+
     emotions_list = Emotions.objects.all()
     context_dict = {'emotions_records':emotions_list}
     
@@ -112,32 +114,13 @@ def PieChart_Today():
 
     return values
 
-def ScatterPlot_Joyfullness():
-    '''
-    Function to calculate summary of Joyfullness and avg temp per day 
-    by - group by day, calc avg and count
-    and filter emotions - by type Joyfullness
-    '''
-    df = list(Emotions.objects.values('date').filter(emotions = '5').annotate(avgTemp = Avg('current_weather'),
-    count = Count('emotions')).order_by('date').values('avgTemp','count'))
-    values = [[ 'Joyfullness','Temperature']]
-
-    for row in df:
-        my_list = [row['count'], row['avgTemp']]
-        values.append(my_list)
-
-    with open("basic_app/static/scatter_joyfullness.json", "w") as fp:
-        json.dump(values , fp) 
-
-    return values
-
-def ScatterPlot_Fear():
+def ScatterPlot(number):
     '''
     Function to calculate summary of fear and avg temp per day 
     by - group by day, calc avg and count
     and filter emotions - by type fear
     '''
-    df = list(Emotions.objects.values('date').filter(emotions = '1').annotate(avgTemp = Avg('current_weather'),
+    df = list(Emotions.objects.values('date').filter(emotions = number).annotate(avgTemp = Avg('current_weather'),
     count = Count('emotions')).order_by('date').values('avgTemp','count'))
     values = [[ 'Fear','Temperature']]
 
@@ -160,10 +143,10 @@ def LineChart():
     for row in df:
         my_list = [row['date'].strftime('%Y-%m-%d'),row['avgTemp']]
         values.append(my_list)
-    with open('basic_app/static/avg_temp.json','w') as ft:
-        json.dump(values,ft,sort_keys=True,
-                                indent=1,
-                                cls=DjangoJSONEncoder)
+        with open('basic_app/static/avg_temp.json','w') as ft:
+            json.dump(values,ft,sort_keys=True,
+                                    indent=1,
+                                    cls=DjangoJSONEncoder)
     return values
 
 def HistogramChart():
@@ -210,8 +193,11 @@ def vis(request):
 
     # ----------------------- Data for Scatter Plot -----------------------
  
-    val_scatter_joy =  ScatterPlot_Joyfullness()
-    val_scatter_fear = ScatterPlot_Fear()
+    val_scatter_joy =  ScatterPlot(5)
+    val_scatter_fear = ScatterPlot(1)
+    val_scatter_sadness = ScatterPlot(2)
+    val_scatter_anger = ScatterPlot(3)
+    val_scatter_shame = ScatterPlot(4)
 
     # ----------------------- Data for Histogram -----------------------
 
@@ -227,6 +213,9 @@ def vis(request):
                                                         'val_line':val_line,
                                                         'val_scatter_joy':val_scatter_joy,
                                                         'val_scatter_fear':val_scatter_fear,
+                                                        'val_scatter_sadness': val_scatter_sadness,
+                                                        'val_scatter_anger':val_scatter_anger,
+                                                        'val_scatter_shame':val_scatter_shame,
                                                         'val_hist': val_hist,
                                                         'val_calendar':val_calendar
                                                         })

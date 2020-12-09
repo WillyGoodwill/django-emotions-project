@@ -25,6 +25,7 @@
             google.charts.setOnLoadCallback(drawScatterPlot_Fear);
             google.charts.setOnLoadCallback(drawScatterPlot_Sadness);
             google.charts.setOnLoadCallback(drawScatterPlot_Shame);
+            google.charts.setOnLoadCallback(drawScatterPlot_Anger);
 
             google.charts.setOnLoadCallback(drawHistogram);
             google.charts.setOnLoadCallback(drawCalendar);
@@ -64,7 +65,7 @@
 
                 // Set chart options
                 var options = {
-                    title: 'Daily Emotions',
+                    title: 'Emotions Of Today',
                     pieHole: 0.4,
                 };
                 var chart = new google.visualization.PieChart(document.getElementById('donutchart2'));
@@ -137,7 +138,7 @@
             }
 
             function drawScatterPlot_Sadness() {
-                var data = google.visualization.arrayToDataTable({{val_scatter_fear|safe}});
+                var data = google.visualization.arrayToDataTable({{val_scatter_sadness|safe}});
 
                 var options = {
                 title: 'Average temperature vs. Sadness',
@@ -151,12 +152,27 @@
                 chart.draw(data, options);
             }
 
+            function drawScatterPlot_Anger() {
+                var data = google.visualization.arrayToDataTable({{val_scatter_anger|safe}});
+
+                var options = {
+                title: 'Average temperature vs. Anger',
+                hAxis: {title: 'Sadness', minValue: 0, maxValue: 7},
+                vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
+                legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('Scatterchart_div_anger'));
+
+                chart.draw(data, options);
+            }
+
             function drawScatterPlot_Shame() {
-                var data = google.visualization.arrayToDataTable({{val_scatter_fear|safe}});
+                var data = google.visualization.arrayToDataTable({{val_scatter_shame|safe}});
 
                 var options = {
                 title: 'Average temperature vs. Shame',
-                hAxis: {title: 'Shame', minValue: 0, maxValue: 7},
+                hAxis: {title: 'Sadness', minValue: 0, maxValue: 7},
                 vAxis: {title: 'Temperature', minValue: -7, maxValue: 10},
                 legend: 'none'
                 };
@@ -166,13 +182,15 @@
                 chart.draw(data, options);
             }
 
+
+
             function drawHistogram() {
                 var data = google.visualization.arrayToDataTable({{val_hist|safe}});
 
                 var options = {
-                title: 'Average temperature',
-                legend: { position: 'none' },
-                };
+                    title: 'Average temperature',
+                    legend: { position: 'none' },
+                    };
 
                 var chart = new google.visualization.Histogram(document.getElementById('Histogram_div'));
                 chart.draw(data, options);
@@ -246,8 +264,12 @@
             </tr>
             <tr>
                 <td><div id="Scatterchart_div_sadness" style="border: 0px solid #ccc"></div></td>
+                <td><div id="Scatterchart_div_anger" style="border: 0px solid #ccc"></div></td>
+              </tr>
+              <tr>
                 <td><div id="Scatterchart_div_shame" style="border: 0px solid #ccc"></div></td>
               </tr>
+
           </table>
         </div>
         <br>

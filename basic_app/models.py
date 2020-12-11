@@ -22,3 +22,8 @@ class EmotionsAvgTemperature(models.Model):
     date = models.DateField(auto_now=True)
     joyfullness = models.FloatField(blank = True, null = True)
     average_temperature = models.FloatField(blank = True, null = True)
+
+class Stocks2(models.Model):
+    date = models.DateField() 
+    AAPL = models.FloatField(blank = True, null = True)
+    TSLA = models.FloatField(blank = True, null = True)

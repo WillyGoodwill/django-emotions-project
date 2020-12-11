@@ -29,6 +29,7 @@
 
             google.charts.setOnLoadCallback(drawHistogram);
             google.charts.setOnLoadCallback(drawCalendar);
+            google.charts.setOnLoadCallback(drawBubbleChart);
 
             // Callback that creates and populates a data table,
             // instantiates the pie chart, passes in the data and
@@ -212,6 +213,22 @@
                 chart.draw(dataTable, options);
             }
 
+            function drawBubbleChart() {
+
+                var data = google.visualization.arrayToDataTable({{val_bubble|safe}});
+
+                var options = {
+                title: 'Correlation between emotions avg temperature ' +
+                        'and emotions degree ',
+                hAxis: {title: 'Avg temperature'},
+                vAxis: {title: 'Count of emotions'},
+                bubble: {textStyle: {fontSize: 11}}
+                };
+
+                var chart = new google.visualization.BubbleChart(document.getElementById('bubble_chart_div'));
+                chart.draw(data, options);
+                }
+
         </script>
     </head>
     <body>
@@ -223,6 +240,7 @@
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions_form'%}">EMOTIONS FORM</a></li>
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>
                     <li><a class = 'navbar-link' href="{% url 'basic_app:vis'%}">CHARTS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:stocks'%}">STOCKS</a></li>
 
                 </ul>
                 <ul class = 'nav navbar-nav mr-auto navbar-right'>
@@ -273,5 +291,7 @@
           </table>
         </div>
         <br>
+        <div id="bubble_chart_div" style="width: 900px; height: 500px;"></div>
+
 </body>
 </html>

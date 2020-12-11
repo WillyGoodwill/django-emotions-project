@@ -1,6 +1,6 @@
 from django import forms
 from django.core import validators
-from basic_app.models import Emotions, EmotionsAvgTemperature
+from basic_app.models import Emotions, EmotionsAvgTemperature,Stocks2
 import datetime
 from django.utils import timezone
 import os
@@ -58,4 +58,8 @@ class FormEmotionsAvgTemperature(forms.ModelForm):
     date = forms.DateField()
     joyfullness = forms.FloatField(required = False)
     average_temperature = forms.FloatField(required = False)
-        
+
+class FormStocks2(forms.ModelForm):
+    date = forms.DateField() 
+    AAPL = forms.FloatField(required = False)
+    TSLA = forms.FloatField(required = False)

@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from basic_app.models import Emotions,EmotionsAvgTemperature
-from basic_app.forms import FormEmotions,FormEmotionsAvgTemperature
+from basic_app.models import Emotions,EmotionsAvgTemperature, Stocks2
+from basic_app.forms import FormEmotions,FormEmotionsAvgTemperature,FormStocks2
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import (TemplateView, ListView, DetailView, CreateView
-)
+# from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.views.generic import (TemplateView, ListView, DetailView, CreateView
+# )
 import requests
 import random
 from django.core.serializers.json import DjangoJSONEncoder
@@ -16,6 +16,7 @@ import json
 import os
 import pandas as pd
 import datetime
+import numpy as np
 
 from django.db.models import Count
 from django.db.models import Avg
@@ -170,6 +171,19 @@ def CalendarChart():
     values = str(values).replace('datetime.date','new Date').replace('"','')
     return values
 
+def BubbleChart():
+
+    df = list(Emotions.objects.values('emotions_degree','emotions').annotate(avgTemp = Avg('current_weather'),
+                                                                        countEm = Count('emotions_degree'),
+                                                                        count = Count('emotions')).values('emotions_degree',
+                                                                        'avgTemp','count','emotions','countEm'))
+    values = [['Emotion Degree', 'Avg Temperature', 'Count of emotions', 'Emotions','Count of Emotions degree']]
+    for row in df:
+        my_list = [row['emotions_degree'],row['avgTemp'],row['count'],row['emotions'],row['countEm']]
+        values.append(my_list)
+        
+    return values
+
 def vis(request):
     # ----------------------- Data for Pie Chart Total -----------------------
     values = PieChart_Total()
@@ -206,6 +220,8 @@ def vis(request):
     # ----------------------- Data for Calendar -----------------------
 
     val_calendar = CalendarChart()
+    # ----------------------- Data for Bubble -----------------------
+    val_bubble = BubbleChart()
 
     return render(request,'basic_app/google_template.html', {'values':values,
                                                         'val_pie_today':val_pie_today,
@@ -217,6 +233,49 @@ def vis(request):
                                                         'val_scatter_anger':val_scatter_anger,
                                                         'val_scatter_shame':val_scatter_shame,
                                                         'val_hist': val_hist,
-                                                        'val_calendar':val_calendar
+                                                        'val_calendar':val_calendar,
+                                                        'val_bubble':val_bubble
                                                         })
 
+import pandas as pd
+import yfinance as yf
+
+def stocks(request):
+    stocks_list = Stocks2.objects.order_by('-date').values()[:5] 
+
+    if request.method == 'POST':
+        if 'loadstocks' in request.POST:
+            tickers_list = ['AAPL','TSLA']
+
+            data = pd.DataFrame(columns=tickers_list)
+
+            for ticker in tickers_list:
+                data[ticker] = yf.download(ticker,datetime.date.today()-datetime.timedelta(2),
+                datetime.date.today())['Adj Close']
+
+            data = data.reset_index()
+            data['Date2'] = pd.to_datetime(data['Date']).apply(lambda x: x.strftime('%Y-%m-%d'))
+
+            date = data.loc[-1:,'Date2'][1]
+
+            AAPL =data.loc[-1:,'AAPL'][1] 
+            TSLA =data.loc[-1:,'TSLA'][1] 
+
+            my_obj = Stocks2(date = date,AAPL=AAPL, TSLA=TSLA)        
+            my_obj.save() 
+        elif 'deletestocks' in request.POST:
+            try:
+                print(Stocks2.objects.last().date)
+                Stocks2.objects.last().delete()
+                stocks_list = Stocks2.objects.order_by('-date').values()[:5] 
+
+            except:
+                print('No items to delete')
+
+    return render(request,'basic_app/stocks.html',{'stocks_list':stocks_list})
+
+# def stock_prices():
+
+
+
+# сохранить в базу

@@ -1,0 +1,40 @@
+{% extends "basic_app/base.html" %}
+    {% block body_block %}
+    <div class = 'container'>
+        <!-- <h2>Please sign up or login to continue</h2> -->
+        <div class = 'container'>
+            {% if stocks_list%}
+            <table class = 'stocks' style="border: 1px solid">
+                <thead>
+                    <th style="border: 1px solid">date</th>
+                    <th style="border: 1px solid">AAPL</th>
+                    <th style="border: 1px solid">TSLA</th>
+
+                </thead>
+                {% for em in stocks_list %}
+                <tr>
+                    <td style="border: 1px solid">{{em.date}}</td>
+                    <td style="border: 1px solid">{{em.AAPL | floatformat:2}}</td>
+                    <td style="border: 1px solid">{{em.TSLA | floatformat:2}}</td>
+
+                </tr>
+                {% endfor%}
+            </table>
+                <form method = 'POST'>
+                    {% csrf_token%}
+                    <input type="submit" class = 'btn btn-success' value = 'Load stock prices' name = 'loadstocks'>
+                </form>
+                <form method = 'POST'>
+                    {% csrf_token%}
+                    <input type="submit" class = 'btn btn-danger' value = 'Delete' name = 'deletestocks'>
+                </form>
+            {% else %}
+                <p> No records</p>
+            {% endif%}
+        </div> 
+
+    </div>
+    <div class = 'container'>
+
+    </div>
+    {%endblock%}

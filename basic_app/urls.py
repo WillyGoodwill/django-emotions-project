@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^vis/$', views.vis,name = 'vis'),
     url(r'^emotions/$', views.emotions,name = 'emotions'),
     url(r'^stocks/$', views.stocks,name = 'stocks'),
+    url(r'^add_stock/$', views.add_stock,name = 'add_stock'),
 
 ]
 

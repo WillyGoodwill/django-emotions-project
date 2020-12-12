@@ -242,9 +242,23 @@ import yfinance as yf
 
 def stocks(request):
     stocks_list = Stocks2.objects.order_by('-date').values()[:5] 
-
+    import requests
+    import json
     if request.method == 'POST':
-        if 'loadstocks' in request.POST:
+        if 'searchTicker' in request.POST:
+            ticker = request.POST['ticker']
+            api_request = requests.get("https://cloud.iexapis.com/stable/stock/"+ticker+"/quote?token=pk_3022547508644825871800589be99722")
+
+            try:
+                api = json.loads(api_request.content)
+                print('You get in json')
+            except:
+                api = "Error"
+                print('You get Error')
+            return render(request,'basic_app/stocks.html',{'stocks_list':stocks_list,
+                                                    'api':api})
+
+        elif 'loadstocks' in request.POST:
             tickers_list = ['AAPL','TSLA']
 
             data = pd.DataFrame(columns=tickers_list)
@@ -271,11 +285,10 @@ def stocks(request):
 
             except:
                 print('No items to delete')
+    
 
     return render(request,'basic_app/stocks.html',{'stocks_list':stocks_list})
 
-# def stock_prices():
-
-
-
+def add_stock(request):
+    return render(request,'basic_app/add_stock.html')
 # сохранить в базу

@@ -5,17 +5,19 @@ django.setup()
 
 # Fake pop script
 
-from basic_app.models import Stocks
+from basic_app.models import Stocks2
 
 import pandas as pd
 import yfinance as yf
 import datetime
 
 
-def add_topic():
-    t = Stocks.objects.get_or_create(date = date,
+def add_topic(date,AAPL,TSLA):
+    print(date)
+    t = Stocks2.objects.get_or_create(date = date,
     AAPL = AAPL,
     TSLA = TSLA)[0]
+    print(t.date)
     t.save()
     return t
 
@@ -24,16 +26,17 @@ tickers_list = ['AAPL','TSLA']
 data = pd.DataFrame(columns=tickers_list)
 
 for ticker in tickers_list:
-    data[ticker] = yf.download(ticker,'2016-12-01','2020-12-09')['Adj Close']
+    data[ticker] = yf.download(ticker,'2016-12-10','2020-12-11')['Adj Close']
 
 data = data.reset_index()
+# format date 
+data['Date2'] = pd.to_datetime(data['Date']).apply(lambda x: x.strftime('%Y-%m-%d'))
 
 for i in range(len(data['AAPL'])):
-    date = data.iloc[:i+1,0][0]
+    date = data['Date2'][i]
     AAPL = data['AAPL'][i]
     TSLA = data['TSLA'][i]
-
-    add_topic()
+    add_topic(date,AAPL,TSLA)
 
 
     

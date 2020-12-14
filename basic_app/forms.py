@@ -1,6 +1,7 @@
 from django import forms
 from django.core import validators
-from basic_app.models import Emotions, EmotionsAvgTemperature,Stocks2
+from basic_app.models import (Emotions, EmotionsAvgTemperature,Stocks2, Stock,
+AboutMyView,AboutMyViewOthers,AboutMyViewFuture)
 import datetime
 from django.utils import timezone
 import os
@@ -63,3 +64,23 @@ class FormStocks2(forms.ModelForm):
     date = forms.DateField() 
     AAPL = forms.FloatField(required = False)
     TSLA = forms.FloatField(required = False)
+
+class StockForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields= ["ticker"]
+
+class TestForm(forms.ModelForm):
+    class Meta:
+        model = AboutMyView
+        fields= ["text"]
+
+class TestForm2(forms.ModelForm):
+    class Meta:
+        model = AboutMyViewOthers
+        fields= ["text"]
+
+class TestForm3(forms.ModelForm):
+    class Meta:
+        model = AboutMyViewFuture
+        fields= ["text"]

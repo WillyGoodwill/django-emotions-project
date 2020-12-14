@@ -5,20 +5,20 @@
         <!-- <h1>{{text| upper}}</h1> -->
         <div class = 'container'>
             {% if emotions_records%}
-                <table>
-                    <thead>
-                        <th>date</th>
-                        <th>weather</th>
-                        <th>event</th>
-                        <th>emotions</th>
-                        <th>emotions degree</th>
-                        <th>body reaction</th>
-                        <th>thoughts</th>
-                        <th>outcome</th>
+                <table class="table table-striped table-hover">
+                    <thead  class = "table-dark">
+                        <th scope="col">date</th>
+                        <th scope="col">weather</th>
+                        <th scope="col">event</th>
+                        <th scope="col">emotions</th>
+                        <th scope="col">emotions degree</th>
+                        <th scope="col">body reaction</th>
+                        <th scope="col">thoughts</th>
+                        <th scope="col">outcome</th>
                     </thead>
                     {% for em in emotions_records %}
                     <tr>
-                        <td>{{em.date}}</td>
+                        <th scope="row">{{em.date}}</td>
                         <td>{{em.current_weather}}</td>
                         <td>{{em.event}}</td>
                         <td>{{em.emotions}}</td>

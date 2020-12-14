@@ -1,0 +1,91 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = 'utf-8'>
+        <title>My app</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static '/css/mystyles.css'%}">
+        <style>
+            .boxy{
+                background:red;
+                border: 1px solid black;
+            }
+            .myBlueDuplicates {
+                background-color: rgb(240, 240, 134);
+                border: 1px solid black;
+            }
+        </style>   
+    </head>
+    <body>
+        <nav class = 'navbar navbar-default navbar-static-top'>
+            <div class = 'container'>
+                <ul class = 'nav navbar-nav'>
+                    <li><a class='navbar-brand' href="{% url 'index'%}">FOODTRACKER</a></li>
+                    <!-- <li><a class = 'navbar-link' href="{% url 'admin:index'%}">Admin</a></li> -->
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:emotions_form'%}">EMOTIONS FORM</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:vis'%}">CHARTS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:stocks'%}">STOCKS</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:add_stock'%}">ADD STOCK</a></li>
+
+                </ul>
+                <ul class = 'nav navbar-nav mr-auto navbar-right'>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:signup'%}">Sign up</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:login'%}">Login</a></li>
+
+                </ul>
+            </div>
+        </nav>
+        <div class = 'container'>
+            {% block body_block%}
+                <h1>About me</h1>
+                <div class = 'row'>
+                    <div class = 'col-lg-4'>
+                        <label for="">Что вы думаете о себе:</label>
+                        <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
+                            <div class="form-group">
+                                {% csrf_token%}
+                                <input type="text" class="form-control" placeholder="Add 20 phrases about me" name = "text">
+                            </div> 
+                            <button type="submit" class="btn btn-success" name= 'me_about_me'>Add </button>
+                        </form>
+                        <br>
+                        <table class="table table-striped table-hover">
+                            <thead class = "">
+                              <tr>
+                                <th >Description</th>
+                                <th >Delete item</th>
+                              </tr>
+                            </thead>
+                            <tbody>  
+                            {% for item in text%}
+                                <tr>
+                                    <td>{{item}} </td> 
+                                    <td> <a href="{%url 'basic_app:delete_about_me'%}">Delete</a>  </td>
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                          </table>
+                        <form method = 'POST'>
+                            {% csrf_token%}
+                            <input type="submit" class = 'btn btn-danger' value = 'Delete' name = 'delete_about_me'>
+                        </form>
+                            
+                    </div>
+                    <div class = 'col-lg-4'>
+                        <label for="">Что посторонние думают о вас:</label>
+                       
+
+                    </div>
+                    <div class = 'col-lg-4'>
+                        <label for="">Что бы вы хотели думать о себе:</label>
+                        
+                    </div>
+
+                </div>
+            {% endblock%}
+        </div>
+
+    </body>
+</html>

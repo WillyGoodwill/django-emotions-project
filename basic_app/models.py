@@ -27,3 +27,24 @@ class Stocks2(models.Model):
     date = models.DateField() 
     AAPL = models.FloatField(blank = True, null = True)
     TSLA = models.FloatField(blank = True, null = True)
+
+class Stock(models.Model):
+    ticker = models.CharField(max_length = 10)
+
+    def __str__(self):
+        return self.ticker
+
+class AboutMyView(models.Model):
+    text = models.CharField(max_length = 200)
+    def __str__(self):
+        return self.text
+
+class AboutMyViewOthers(models.Model):
+    text = models.CharField(max_length = 200)
+    def __str__(self):
+        return self.text
+
+class AboutMyViewFuture(models.Model):
+    text = models.CharField(max_length = 200)
+    def __str__(self):
+        return self.text

@@ -41,9 +41,8 @@
         <div class = 'container'>
             <!-- <h2>Please sign up or login to continue</h2> -->
             <div class = 'container'>
-                <!-- {%if ticker%}
-                    {{ticker}}
-                {% endif%} -->
+
+
                 {% if api%}
                 <h1>{{api.companyName}}</h1><br>
                 Price $: {{api.latestPrice}} <br>
@@ -60,7 +59,7 @@
                 {%endif%}
                 {{api}}
                 {% if stocks_list%}
-                <table class = 'stocks' style="border: 1px solid">
+                <table class = 'table table-striped table-hover'>
                     <thead>
                         <th style="border: 1px solid">date</th>
                         <th style="border: 1px solid">AAPL</th>

@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.urls.base import reverse
+from django.contrib import messages
 
-from basic_app.models import Emotions,EmotionsAvgTemperature, Stocks2
-from basic_app.forms import FormEmotions,FormEmotionsAvgTemperature,FormStocks2
+from basic_app.models import (Emotions,EmotionsAvgTemperature, Stocks2, Stock,
+ AboutMyView,AboutMyViewOthers,AboutMyViewFuture)
+from basic_app.forms import (FormEmotions,FormEmotionsAvgTemperature,FormStocks2, StockForm,
+ TestForm,TestForm2,TestForm3)
 
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.mixins import LoginRequiredMixin
@@ -94,6 +98,7 @@ def login(request):
 
 def signup(request):
     return HttpResponse('Hello, from Sign up page')
+
 
 def PieChart_Total():
     df = list(Emotions.objects.values('emotions').annotate(count = Count('emotions')).values('emotions','count'))
@@ -251,10 +256,8 @@ def stocks(request):
 
             try:
                 api = json.loads(api_request.content)
-                print('You get in json')
             except:
                 api = "Error"
-                print('You get Error')
             return render(request,'basic_app/stocks.html',{'stocks_list':stocks_list,
                                                     'api':api})
 
@@ -290,5 +293,53 @@ def stocks(request):
     return render(request,'basic_app/stocks.html',{'stocks_list':stocks_list})
 
 def add_stock(request):
-    return render(request,'basic_app/add_stock.html')
-# сохранить в базу
+    if request.method == "POST":
+        form = StockForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            return redirect('basic_app:add_stock')
+    else:
+        ticker = Stock.objects.all()
+        output = []
+        for ticker_item in ticker:
+
+            api_request = requests.get("https://cloud.iexapis.com/stable/stock/"+str(ticker_item)+"/quote?token=pk_3022547508644825871800589be99722")
+
+            try:
+                api = json.loads(api_request.content)
+                output.append(api)
+            except:
+                api = "Error"
+        return render(request,'basic_app/add_stock.html',{'ticker':ticker,'output':output})
+
+def delete(request, stock_id):
+    item = Stock.objects.get(pk = stock_id)
+    item.delete()
+    return redirect('basic_app:add_stock')
+
+def about_me(request):
+    if request.method == "POST":
+        if 'me_about_me' in request.POST:
+            form = TestForm(request.POST or None)
+            if form.is_valid():
+                form.save()
+                return redirect('basic_app:about_me')
+            else:
+                return render(request,'basic_app/test_about_me.html')
+        elif 'delete_about_me' in request.POST:
+            if len(AboutMyView.objects.all())>0:
+                AboutMyView.objects.last().delete()
+            text = AboutMyView.objects.all()
+            return render(request,'basic_app/test_about_me.html',{'text':text})
+        else:
+            text = AboutMyView.objects.all()
+            return render(request,'basic_app/test_about_me.html',{'text':text})
+    else:
+
+        text = AboutMyView.objects.all()
+        return render(request,'basic_app/test_about_me.html',{'text':text})
+
+def delete_about_me(request, text_id):
+    item = AboutMyView.objects.get(pk = text_id)
+    item.delete()
+    return redirect('basic_app:about_me')

@@ -62,7 +62,7 @@
                             {% for item in text%}
                                 <tr>
                                     <td>{{item}} </td> 
-                                    <td> <a href="{%url 'basic_app:delete_about_me'%}">Delete</a>  </td>
+                                    <td> <a href="{%url 'basic_app:delete_about_me' item.id%}">Delete</a>  </td>
                                 </tr>
                             {%endfor%}
                             </tbody>

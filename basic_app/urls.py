@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^add_stock/$', views.add_stock,name = 'add_stock'),
     url(r'^delete/<stock_id>$', views.delete,name = 'delete'),
     url(r'^test_about_me/$', views.about_me,name = 'about_me'),
-    url(r'^delete_about_me/<pk:text_id>$', views.delete_about_me,name = 'delete_about_me')
+    path('delete_about_me/<int:text_id>', views.delete_about_me,name = 'delete_about_me')
 
 ]
 

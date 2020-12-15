@@ -318,28 +318,59 @@ def delete(request, stock_id):
     return redirect('basic_app:add_stock')
 
 def about_me(request):
+
     if request.method == "POST":
-        if 'me_about_me' in request.POST:
+        if 'about_me' in request.POST:
             form = TestForm(request.POST or None)
             if form.is_valid():
                 form.save()
                 return redirect('basic_app:about_me')
             else:
                 return render(request,'basic_app/test_about_me.html')
-        elif 'delete_about_me' in request.POST:
-            if len(AboutMyView.objects.all())>0:
-                AboutMyView.objects.last().delete()
-            text = AboutMyView.objects.all()
-            return render(request,'basic_app/test_about_me.html',{'text':text})
+        elif 'about_me_others' in request.POST:
+            form = TestForm2(request.POST or None)
+            if form.is_valid():
+                form.save()
+                return redirect('basic_app:about_me')
+            else:
+                return render(request,'basic_app/test_about_me.html')
+        elif 'about_me_future' in request.POST:
+            form = TestForm3(request.POST or None)
+            if form.is_valid():
+                form.save()
+                return redirect('basic_app:about_me')
+            else:
+                return render(request,'basic_app/test_about_me.html')
         else:
             text = AboutMyView.objects.all()
-            return render(request,'basic_app/test_about_me.html',{'text':text})
+            text2 = AboutMyViewOthers.objects.all()
+            text3 = AboutMyViewFuture.objects.all()
+
+            return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
     else:
 
         text = AboutMyView.objects.all()
-        return render(request,'basic_app/test_about_me.html',{'text':text})
+        text2 = AboutMyViewOthers.objects.all()
+        text3 = AboutMyViewFuture.objects.all()
+
+        return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
 
 def delete_about_me(request, text_id):
     item = AboutMyView.objects.get(pk = text_id)
     item.delete()
     return redirect('basic_app:about_me')
+
+def delete_about_me_others(request, text_id):
+    item = AboutMyViewOthers.objects.get(pk = text_id)
+    item.delete()
+    return redirect('basic_app:about_me')
+
+def delete_about_me_future(request, text_id):
+    item = AboutMyViewFuture.objects.get(pk = text_id)
+    item.delete()
+    return redirect('basic_app:about_me')
+
+
+
+
+

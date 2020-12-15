@@ -48,7 +48,7 @@
                                 {% csrf_token%}
                                 <input type="text" class="form-control" placeholder="Add 20 phrases about me" name = "text">
                             </div> 
-                            <button type="submit" class="btn btn-success" name= 'me_about_me'>Add </button>
+                            <button type="submit" class="btn btn-success" name= 'about_me'>Add </button>
                         </form>
                         <br>
                         <table class="table table-striped table-hover">
@@ -67,20 +67,66 @@
                             {%endfor%}
                             </tbody>
                           </table>
-                        <form method = 'POST'>
-                            {% csrf_token%}
-                            <input type="submit" class = 'btn btn-danger' value = 'Delete' name = 'delete_about_me'>
-                        </form>
+
                             
                     </div>
                     <div class = 'col-lg-4'>
                         <label for="">Что посторонние думают о вас:</label>
-                       
+                        <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
+                            <div class="form-group">
+                                {% csrf_token%}
+                                <input type="text" class="form-control" placeholder="Add 20 phrases about me" name = "text">
+                            </div> 
+                            <button type="submit" class="btn btn-success" name= 'about_me_others'>Add </button>
+                        </form>
+                        <br>
+                        <table class="table table-striped table-hover">
+                            <thead class = "">
+                              <tr>
+                                <th >Description</th>
+                                <th >Delete item</th>
+                              </tr>
+                            </thead>
+                            <tbody>  
+                            {% for item in text2%}
+                                <tr>
+                                    <td>{{item}} </td> 
+                                    <td> <a href="{%url 'basic_app:delete_about_me_others' item.id%}">Delete</a>  </td>
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                          </table>
+
 
                     </div>
                     <div class = 'col-lg-4'>
                         <label for="">Что бы вы хотели думать о себе:</label>
-                        
+                        <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
+                            <div class="form-group">
+                                {% csrf_token%}
+                                <input type="text" class="form-control" placeholder="Add 20 phrases about me" name = "text">
+                            </div> 
+                            <button type="submit" class="btn btn-success" name= 'about_me_future'>Add </button>
+                        </form>
+                        <br>
+                        <table class="table table-striped table-hover">
+                            <thead class = "">
+                              <tr>
+                                <th >Description</th>
+                                <th >Delete item</th>
+                              </tr>
+                            </thead>
+                            <tbody>  
+                            {% for item in text3%}
+                                <tr>
+                                    <td>{{item}} </td> 
+                                    <td> <a href="{%url 'basic_app:delete_about_me_future' item.id%}">Delete</a>  </td>
+                                </tr>
+                            {%endfor%}
+                            </tbody>
+                          </table>
+
+
                     </div>
 
                 </div>

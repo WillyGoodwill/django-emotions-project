@@ -1,7 +1,7 @@
 from django.db import models
 import datetime
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -17,6 +17,10 @@ class Emotions(models.Model):
     body_reaction = models.CharField(max_length= 100)
     thoughts = models.CharField(max_length= 100)
     outcome = models.CharField(max_length= 100)
+
+    user = models.ForeignKey(User,default = 1, on_delete = models.CASCADE)
+    def __str__(self):
+        return self.event
 
 class EmotionsAvgTemperature(models.Model):
     date = models.DateField(auto_now=True)
@@ -36,15 +40,21 @@ class Stock(models.Model):
 
 class AboutMyView(models.Model):
     text = models.CharField(max_length = 200)
+    user = models.ForeignKey(User,default = 1,on_delete = models.CASCADE)
+
     def __str__(self):
         return self.text
 
 class AboutMyViewOthers(models.Model):
     text = models.CharField(max_length = 200)
+    user = models.ForeignKey(User,default = 1,on_delete = models.CASCADE)
+
     def __str__(self):
         return self.text
 
 class AboutMyViewFuture(models.Model):
     text = models.CharField(max_length = 200)
+    user = models.ForeignKey(User,default = 1,on_delete = models.CASCADE)
+
     def __str__(self):
         return self.text

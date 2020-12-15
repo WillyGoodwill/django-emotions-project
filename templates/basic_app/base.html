@@ -24,13 +24,25 @@
 
                 </ul>
                 <ul class = 'nav navbar-nav mr-auto navbar-right'>
-                    <li><a class = 'navbar-link' href="{% url 'basic_app:signup'%}">Sign up</a></li>
-                    <li><a class = 'navbar-link' href="{% url 'basic_app:login'%}">Login</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'signupuser'%}">Sign up</a></li>
+                    <li><a class = 'navbar-link' href="{% url 'basic_app:loginuser'%}">Login</a></li>
 
                 </ul>
             </div>
         </nav>
         <div class = 'container'>
+            {% if user.is_authenticated%}
+                Logged in as {{user.username}}
+                <form action="{% url 'basic_app:logoutuser'%}" method ="POST">
+                    {% csrf_token %}
+                    <button type = "submit">Logout</button>
+
+                </form>
+            {%else%}
+            <a href="{% url 'signupuser'%}">Sign up</a>
+            <a href="{% url 'basic_app:loginuser'%}">Login</a>
+
+            {% endif%}
             {% block body_block%}
             <!-- Anything outside of this will be inherited -->
             {% endblock%}

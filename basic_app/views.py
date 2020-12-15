@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.contrib.auth import login, logout, authenticate
 
 from basic_app.models import (Emotions,EmotionsAvgTemperature, Stocks2, Stock,
  AboutMyView,AboutMyViewOthers,AboutMyViewFuture)
@@ -92,12 +96,6 @@ def emotions(request):
         except:
             print('No items to delete')
     return render(request,'basic_app/emotions.html', context = context_dict)
-
-def login(request):
-    return HttpResponse('Hello, from Login page')
-
-def signup(request):
-    return HttpResponse('Hello, from Sign up page')
 
 
 def PieChart_Total():
@@ -370,7 +368,40 @@ def delete_about_me_future(request, text_id):
     item.delete()
     return redirect('basic_app:about_me')
 
+def signupuser(request):
+    if request.method=="GET":
+        return render(request,'basic_app/signupuser.html',{'form':UserCreationForm()})
+    else:
+        # create a user
+        if request.POST["password1"]==request.POST["password2"]:
+            try:
+                user = User.objects.create_user(request.POST["username"],
+                password = request.POST["password1"])
+                user.save() # inserts into DB
+                login(request,user) # logged in user
+                return redirect('basic_app:index')
+            except IntegrityError:
+                return render(request,'basic_app/signupuser.html',{'form':UserCreationForm(),
+                'error':'This user has already been chosen'})
 
+        else:
+            return render(request,'basic_app/signupuser.html',{'form':UserCreationForm(),
+            'error':'Passwords did not match'})
 
+def logoutuser(request):
+    if request.method=="POST":
+        logout(request)
+        return redirect('basic_app:index')
+    return render(request,'basic_app/index.html')
 
-
+def loginuser(request):
+    if request.method=="GET":
+        return render(request,'basic_app/loginuser.html',{'form':AuthenticationForm()})
+    
+    else:
+        user = authenticate(request,username= request.POST["username"],password= request.POST["password"])
+        if user is None:
+            return render(request,'basic_app/loginuser.html',{'form':AuthenticationForm(),'error':'Username and password did not match'})
+        else:
+            login(request,user) # logged in user
+            return redirect('basic_app:index')

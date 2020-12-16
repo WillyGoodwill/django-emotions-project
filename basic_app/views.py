@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 
 from basic_app.models import (Emotions,EmotionsAvgTemperature, Stocks2, Stock,
  AboutMyView,AboutMyViewOthers,AboutMyViewFuture)
@@ -62,7 +63,9 @@ def emotions_form(request):
     if request.method == 'POST':
         form = FormEmotions(request.POST)
         if form.is_valid():
-            form.save(commit = True)
+            newEmotions = form.save(commit = True)
+            newEmotions.user = request.user
+            newEmotions.save()
             form = FormEmotions()
 
         else:
@@ -81,13 +84,14 @@ def emotions_form(request):
     return render(request,'basic_app/emotions_form.html',{'form':form})
 
 
-
 def emotions(request):
     # don't want to show to everyone, Login required
-
-    emotions_list = Emotions.objects.all()
+    if request.user.is_authenticated: 
+        emotions_list = Emotions.objects.filter(user = request.user)
+    else:
+        emotions_list = 'You have no records'
     context_dict = {'emotions_records':emotions_list}
-    
+        
     if request.method == 'POST':
         try:
             print(Emotions.objects.last().event)
@@ -98,102 +102,125 @@ def emotions(request):
     return render(request,'basic_app/emotions.html', context = context_dict)
 
 
-def PieChart_Total():
-    df = list(Emotions.objects.values('emotions').annotate(count = Count('emotions')).values('emotions','count'))
-    values = []
-    for row in df:
-        my_list= [row['emotions'],row['count']]
-        values.append(my_list)  
-    values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
+def PieChart_Total(request):
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('emotions').annotate(count = Count('emotions')).values('emotions','count'))
+        values = []
+        for row in df:
+            my_list= [row['emotions'],row['count']]
+            values.append(my_list)  
+        values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
+    else:
+        values = ''
     return values
 
-def PieChart_Today():
-    df = list(Emotions.objects.values('emotions').filter(date__gte = datetime.date.today()).annotate(count = Count('emotions')).values('emotions','count'))
-    values = []
-    for row in df:
-        my_list = [row['emotions'],row['count']]
-        values.append(my_list)
-    
-    values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
-
+def PieChart_Today(request):
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('emotions').filter(date__gte = datetime.date.today()).annotate(count = Count('emotions')).values('emotions','count'))
+        values = []
+        for row in df:
+            my_list = [row['emotions'],row['count']]
+            values.append(my_list)
+        
+        values = eval(str(values).replace("'1'","'Страх'").replace("'2'","'Тоска'").replace("'3'","'Гнев'").replace("'4'","'Стыд'").replace("'5'","'Радость'"))
+    else:
+        values = ''
     return values
 
-def ScatterPlot(number):
+def ScatterPlot(request,number):
     '''
     Function to calculate summary of fear and avg temp per day 
     by - group by day, calc avg and count
     and filter emotions - by type fear
     '''
-    df = list(Emotions.objects.values('date').filter(emotions = number).annotate(avgTemp = Avg('current_weather'),
-    count = Count('emotions')).order_by('date').values('avgTemp','count'))
-    values = [[ 'Fear','Temperature']]
+    if request.user.is_authenticated:
 
-    for row in df:
-        my_list = [row['count'], row['avgTemp']]
-        values.append(my_list)
+        df = list(Emotions.objects.filter(user = request.user).values('date').filter(emotions = number).annotate(avgTemp = Avg('current_weather'),
+        count = Count('emotions')).order_by('date').values('avgTemp','count'))
+        values = [[ 'Fear','Temperature']]
 
-    with open("basic_app/static/scatter_fear.json", "w") as fp:
-        json.dump(values , fp) 
+        for row in df:
+            my_list = [row['count'], row['avgTemp']]
+            values.append(my_list)
+
+        with open("basic_app/static/scatter_fear.json", "w") as fp:
+            json.dump(values , fp) 
+    else:
+        values = ''
 
     return values
 
-def LineChart():
+def LineChart(request):
     '''
     Function to calculate avg temperature daily - group by day, calc avg of temp
 
     '''
-    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')).values('date','avgTemp'))
-    values = [['year','value']]
-    for row in df:
-        my_list = [row['date'].strftime('%Y-%m-%d'),row['avgTemp']]
-        values.append(my_list)
-        with open('basic_app/static/avg_temp.json','w') as ft:
-            json.dump(values,ft,sort_keys=True,
-                                    indent=1,
-                                    cls=DjangoJSONEncoder)
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('date').annotate(avgTemp = Avg('current_weather')).values('date','avgTemp'))
+        values = [['year','value']]
+        for row in df:
+            my_list = [row['date'].strftime('%Y-%m-%d'),row['avgTemp']]
+            values.append(my_list)
+            with open('basic_app/static/avg_temp.json','w') as ft:
+                json.dump(values,ft,sort_keys=True,
+                                        indent=1,
+                                        cls=DjangoJSONEncoder)
+    else:
+        values = ''
+    
     return values
 
-def HistogramChart():
-    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')))
-    values = [['Date', 'Avg Temperature']]
-    for row in df:
-        my_list = [row['date'], row['avgTemp']]
-        values.append(my_list)
+def HistogramChart(request):
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('date').annotate(avgTemp = Avg('current_weather')))
+        values = [['Date', 'Avg Temperature']]
+        for row in df:
+            my_list = [row['date'], row['avgTemp']]
+            values.append(my_list)
 
-    values = str(values).replace('datetime','"datetime').replace(')',')"')
+        values = str(values).replace('datetime','"datetime').replace(')',')"')
+    else:
+        values = ''
+
     return values
 
-def CalendarChart():
-    df = list(Emotions.objects.values('date').annotate(avgTemp = Avg('current_weather')))
-    values = []
+def CalendarChart(request):
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('date').annotate(avgTemp = Avg('current_weather')))
+        values = []
 
-    for row in df:
-        my_list = [row['date'], row['avgTemp']]
-        values.append(my_list)
+        for row in df:
+            my_list = [row['date'], row['avgTemp']]
+            values.append(my_list)
 
-    values = str(values).replace('datetime.date','new Date').replace('"','')
+        values = str(values).replace('datetime.date','new Date').replace('"','')
+    else:
+        values = ''
+
     return values
 
-def BubbleChart():
-
-    df = list(Emotions.objects.values('emotions_degree','emotions').annotate(avgTemp = Avg('current_weather'),
-                                                                        countEm = Count('emotions_degree'),
-                                                                        count = Count('emotions')).values('emotions_degree',
-                                                                        'avgTemp','count','emotions','countEm'))
-    values = [['Emotion Degree', 'Avg Temperature', 'Count of emotions', 'Emotions','Count of Emotions degree']]
-    for row in df:
-        my_list = [row['emotions_degree'],row['avgTemp'],row['count'],row['emotions'],row['countEm']]
-        values.append(my_list)
+def BubbleChart(request):
+    if request.user.is_authenticated:
+        df = list(Emotions.objects.filter(user = request.user).values('emotions_degree','emotions').annotate(avgTemp = Avg('current_weather'),
+                                                                            countEm = Count('emotions_degree'),
+                                                                            count = Count('emotions')).values('emotions_degree',
+                                                                            'avgTemp','count','emotions','countEm'))
+        values = [['Emotion Degree', 'Avg Temperature', 'Count of emotions', 'Emotions','Count of Emotions degree']]
+        for row in df:
+            my_list = [row['emotions_degree'],row['avgTemp'],row['count'],row['emotions'],row['countEm']]
+            values.append(my_list)
+    else:
+        values = ''
         
     return values
 
 def vis(request):
     # ----------------------- Data for Pie Chart Total -----------------------
-    values = PieChart_Total()
+    values = PieChart_Total(request)
 
     # -----------------------data for Pie Chart Current Day-----------------------
 
-    val_pie_today = PieChart_Today() 
+    val_pie_today = PieChart_Today(request) 
     # -----------------------data for DrawTable-----------------------
     table_values = [
                 ['Курение',  3, 0],
@@ -206,25 +233,29 @@ def vis(request):
 
     # ----------------------- Data for line chart -----------------------   
     
-    val_line = LineChart()
+    val_line = LineChart(request)
 
     # ----------------------- Data for Scatter Plot -----------------------
  
-    val_scatter_joy =  ScatterPlot(5)
-    val_scatter_fear = ScatterPlot(1)
-    val_scatter_sadness = ScatterPlot(2)
-    val_scatter_anger = ScatterPlot(3)
-    val_scatter_shame = ScatterPlot(4)
+    val_scatter_joy =  ScatterPlot(request,5)
+    val_scatter_fear = ScatterPlot(request,1)
+    val_scatter_sadness = ScatterPlot(request,2)
+    val_scatter_anger = ScatterPlot(request,3)
+    val_scatter_shame = ScatterPlot(request,4)
 
     # ----------------------- Data for Histogram -----------------------
 
-    val_hist = HistogramChart()
+    val_hist = HistogramChart(request)
 
     # ----------------------- Data for Calendar -----------------------
 
-    val_calendar = CalendarChart()
+    val_calendar = CalendarChart(request)
     # ----------------------- Data for Bubble -----------------------
-    val_bubble = BubbleChart()
+    val_bubble = BubbleChart(request)
+    if values=='' or val_pie_today == '':
+        error = 'You have no records'
+    else:
+        error = ''
 
     return render(request,'basic_app/google_template.html', {'values':values,
                                                         'val_pie_today':val_pie_today,
@@ -237,7 +268,8 @@ def vis(request):
                                                         'val_scatter_shame':val_scatter_shame,
                                                         'val_hist': val_hist,
                                                         'val_calendar':val_calendar,
-                                                        'val_bubble':val_bubble
+                                                        'val_bubble':val_bubble,
+                                                        'error':error
                                                         })
 
 import pandas as pd
@@ -340,16 +372,25 @@ def about_me(request):
             else:
                 return render(request,'basic_app/test_about_me.html')
         else:
-            text = AboutMyView.objects.all()
-            text2 = AboutMyViewOthers.objects.all()
-            text3 = AboutMyViewFuture.objects.all()
+            if request.user.is_authenticated: 
+                text = AboutMyView.objects.filter(user = request.user)
+                text2 = AboutMyViewOthers.objects.filter(user = request.user)
+                text3 = AboutMyViewFuture.objects.filter(user = request.user)
+            else:
+                text = 'No records'
+                text = 'No records'
+                text = 'No records'
 
             return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
     else:
-
-        text = AboutMyView.objects.all()
-        text2 = AboutMyViewOthers.objects.all()
-        text3 = AboutMyViewFuture.objects.all()
+        if request.user.is_authenticated: 
+            text = AboutMyView.objects.filter(user = request.user)
+            text2 = AboutMyViewOthers.objects.filter(user = request.user)
+            text3 = AboutMyViewFuture.objects.filter(user = request.user)
+        else:
+            text = 'No records'
+            text = 'No records'
+            text = 'No records'
 
         return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
 

@@ -26,8 +26,7 @@
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions_form'%}">EMOTIONS FORM</a></li>
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>
                     <li><a class = 'navbar-link' href="{% url 'basic_app:vis'%}">CHARTS</a></li>
-                    <li><a class = 'navbar-link' href="{% url 'basic_app:stocks'%}">STOCKS</a></li>
-                    <li><a class = 'navbar-link' href="{% url 'basic_app:add_stock'%}">ADD STOCK</a></li>
+
 
                 </ul>
                 <ul class = 'nav navbar-nav mr-auto navbar-right'>
@@ -53,7 +52,7 @@
                 <h1>About me</h1>
                 <div class = 'row'>
                     <div class = 'col-lg-4'>
-                        <label for="">Что вы думаете о себе:</label>
+                        <label for="">What do you think about yourself:</label>
                         <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
                             <div class="form-group">
                                 {% csrf_token%}
@@ -82,7 +81,7 @@
                             
                     </div>
                     <div class = 'col-lg-4'>
-                        <label for="">Что посторонние думают о вас:</label>
+                        <label for="">What others think about you:</label>
                         <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
                             <div class="form-group">
                                 {% csrf_token%}
@@ -111,7 +110,7 @@
 
                     </div>
                     <div class = 'col-lg-4'>
-                        <label for="">Что бы вы хотели думать о себе:</label>
+                        <label for="">What would you like to think about yourself:</label>
                         <form action = '{% url "basic_app:about_me"%}' class="navbar-form navbar" method = 'POST'>
                             <div class="form-group">
                                 {% csrf_token%}

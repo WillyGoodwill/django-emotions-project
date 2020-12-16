@@ -23,7 +23,7 @@ urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^basic_app/', include('basic_app.urls')),
     path('signup/', views.signupuser,name = 'signupuser'),
-    # path('logout/', views.logoutuser,name = 'logoutuser'),
+    path('login/', views.loginuser,name = 'loginuser'),
 
 ]
 

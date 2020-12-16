@@ -58,6 +58,7 @@ def index(request):
             className = className_lib[2]
     return render(request,'basic_app/index.html',{'value':value[1],'className':className})
 
+@login_required
 def emotions_form(request):
     form = FormEmotions()
     if request.method == 'POST':
@@ -347,6 +348,7 @@ def delete(request, stock_id):
     item.delete()
     return redirect('basic_app:add_stock')
 
+@login_required
 def about_me(request):
 
     if request.method == "POST":
@@ -378,8 +380,8 @@ def about_me(request):
                 text3 = AboutMyViewFuture.objects.filter(user = request.user)
             else:
                 text = 'No records'
-                text = 'No records'
-                text = 'No records'
+                text2 = 'No records'
+                text3 = 'No records'
 
             return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
     else:
@@ -389,8 +391,8 @@ def about_me(request):
             text3 = AboutMyViewFuture.objects.filter(user = request.user)
         else:
             text = 'No records'
-            text = 'No records'
-            text = 'No records'
+            text2 = 'No records'
+            text3 = 'No records'
 
         return render(request,'basic_app/test_about_me.html',{'text':text,'text2':text2,'text3':text3})
 
@@ -428,7 +430,7 @@ def signupuser(request):
         else:
             return render(request,'basic_app/signupuser.html',{'form':UserCreationForm(),
             'error':'Passwords did not match'})
-
+@login_required
 def logoutuser(request):
     if request.method=="POST":
         logout(request)

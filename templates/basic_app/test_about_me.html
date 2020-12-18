@@ -21,6 +21,7 @@
         <nav class = 'navbar navbar-default navbar-static-top'>
             <div class = 'container'>
                 <ul class = 'nav navbar-nav'>
+                    <li> <a href="{% url 'index'%}" class="pull-left"><img src="{% static '/images/iconfinder_49.png'%}"></a></li>
                     <li><a class='navbar-brand' href="{% url 'index'%}">EMOTIONSTRACKER</a></li>
                     <!-- <li><a class = 'navbar-link' href="{% url 'admin:index'%}">Admin</a></li> -->
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions_form'%}">EMOTIONS FORM</a></li>

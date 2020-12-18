@@ -7,14 +7,26 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
         <link rel="stylesheet" href="{% static '/css/mystyles.css'%}">
         <style>
-
-        </style>   
+            .myYellowText {
+                background-color: rgb(240, 240, 134);
+            }
+            .myRedText {
+                background-color: rgb(236, 78, 78);
+            }
+            .myBlueText {
+                background-color: rgb(117, 117, 236);
+            }
+        </style> 
+        <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>  
     </head>
     <body>
         <nav class = 'navbar navbar-default navbar-static-top'>
             <div class = 'container'>
                 <ul class = 'nav navbar-nav'>
-                    <li><a class='navbar-brand' href="{% url 'index'%}">FOODTRACKER</a></li>
+                    <li><a class='navbar-brand' href="{% url 'index'%}">EMOTIONSTRACKER</a></li>
                     <!-- <li><a class = 'navbar-link' href="{% url 'admin:index'%}">Admin</a></li> -->
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions_form'%}">EMOTIONS FORM</a></li>
                     <li><a class = 'navbar-link' href="{% url 'basic_app:emotions'%}">MY EMOTIONS</a></li>

@@ -31,7 +31,7 @@ from django.db.models import Count
 from django.db.models import Avg
 
 def index(request):
-    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/templates/basic_app/emotions_degree.json'), 'r') as json_file:
+    with open(os.path.join(os.path.dirname(os.getcwd()),'emotions_project/basic_app/static/emotions_degree.json'), 'r') as json_file:
 
         data1 = json.load(json_file)
         data2 = data1[0]['Страх'] + data1[0]['Тоска'] + data1[0]['Гнев']+ data1[0]['Стыд']+ data1[0]['Радость']

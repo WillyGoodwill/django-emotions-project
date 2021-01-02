@@ -43,3 +43,14 @@ for i in range(len(data['AAPL'])):
 # if __name__ == '__main__':
 #     populate(20)
 #     print('populating complete')
+
+
+class charts():
+    title = 'googlecharts'
+
+    def __init__(self,name,input_dataset):
+        self.name = name
+        self.input_dataset = input_dataset
+
+if charts.title = 'googlecharts':
+    print('{} - chart name of {} chart'.format(charts.name,charts.title))
